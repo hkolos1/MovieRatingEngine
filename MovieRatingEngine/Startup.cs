@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MovieRatingEngine.Data;
+using MovieRatingEngine.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,10 @@ namespace MovieRatingEngine
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieRatingEngine", Version = "v1" });
             });
+            services.AddScoped<IMoviesService, MoviesService>();
+            services.AddAutoMapper(typeof(Startup));
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
