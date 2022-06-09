@@ -130,8 +130,10 @@ namespace MovieRatingEngine.Services
                 var actor = await _db.Actors.FirstOrDefaultAsync(x => x.Id == id);
                 if (actor == null)
                     throw new Exception("Actor not found.");
-                actor.FirstName = request.FirstName;
-                actor.LastName = request.LastName;
+                if (request.FirstName != null)
+                    actor.FirstName = request.FirstName;
+                if (request.LastName != null)
+                    actor.LastName = request.LastName;
                 //_db.Actors.Update(actor);
                 await _db.SaveChangesAsync();
 
@@ -149,13 +151,13 @@ namespace MovieRatingEngine.Services
 
         public async Task<ServiceResponse<GetActorDto>> PartiallyUpdateActor(Guid id, JsonPatchDocument<AddActorDto> patchDocument)
         {
-           var response=new ServiceResponse<GetActorDto>();
+            var response = new ServiceResponse<GetActorDto>();
             try
             {
                 var actor = await _db.Actors.FirstOrDefaultAsync(x => x.Id == id);
                 if (actor == null)
                     throw new Exception("Actor not found.");
-                var actorToPatch=_mapper.Map<AddActorDto>(actor);
+                var actorToPatch = _mapper.Map<AddActorDto>(actor);
                 patchDocument.ApplyTo(actorToPatch);
 
                 _mapper.Map(actorToPatch, actor);
