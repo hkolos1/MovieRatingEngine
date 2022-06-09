@@ -32,19 +32,19 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<GetMovieDto>>> GetSingle(int id)
+        public async Task<ActionResult<ServiceResponse<GetMovieDto>>> GetSingle(Guid id)
         {
             return Ok(await _moviesService.GetMovieById(id));
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddCharacter(AddMovieDto newMovie)
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie(AddMovieDto newMovie)
         {
             return Ok(await _moviesService.AddMovie(newMovie));
         }
 
         [HttpPut]
-        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateCharacter(UpdateMovieDto updateMovie)
+        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie(UpdateMovieDto updateMovie)
         {
             var response = await _moviesService.UpdateMovie(updateMovie);
             if (response.Data == null)
@@ -55,7 +55,7 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> Delete(int id)
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> DeleteMovie(Guid id)
         {
             var response = await _moviesService.DeleteMovie(id);
             if (response.Data == null)

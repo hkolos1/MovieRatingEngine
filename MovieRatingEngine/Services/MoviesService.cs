@@ -35,7 +35,7 @@ namespace MovieRatingEngine.Services
             return await Task.FromResult(serviceResponse);
         }
 
-        public async Task<ServiceResponse<GetMovieDto>> GetMovieById(int id)
+        public async Task<ServiceResponse<GetMovieDto>> GetMovieById(Guid id)
         {
             var serviceResponse = new ServiceResponse<GetMovieDto>();
             var dbCharacter = await _context.Movies.FirstOrDefaultAsync(c => c.Id == c.Id);
@@ -83,7 +83,7 @@ namespace MovieRatingEngine.Services
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<GetMovieDto>>> DeleteMovie(int id)
+        public async Task<ServiceResponse<List<GetMovieDto>>> DeleteMovie(Guid id)
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
