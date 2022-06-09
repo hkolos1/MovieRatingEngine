@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Services;
+using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,9 @@ namespace MovieRatingEngine
                 });
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
+
+            services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IAuthService, AuthService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
