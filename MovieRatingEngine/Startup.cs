@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Services;
@@ -51,6 +54,19 @@ namespace MovieRatingEngine
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMoviesService, MoviesService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(opt =>
+        {
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(Configuration.GetSection("Appsettings:Token").Value)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+        };
+        });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

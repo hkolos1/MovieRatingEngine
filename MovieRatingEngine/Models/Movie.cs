@@ -15,5 +15,8 @@ namespace MovieRatingEngine.Models
         public List<Actor> Actors { get; set; }
         public string PhotoUrl { get; set; }
 
+        public Guid UserId { get; set; }
+        public User User { get; set; }
+
     }
 }
