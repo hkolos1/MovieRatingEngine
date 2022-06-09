@@ -12,7 +12,7 @@ namespace MovieRatingEngine.Dtos
         public double AverageRating { get; set; }
         public string Type { get; set; }
         public DateTime ReleaseDate { get; set; }
-        public List<Actor> Actors { get; set; }
+        public List<Models.Actor> Actors { get; set; }
         public string PhotoUrl { get; set; }
 
     }
