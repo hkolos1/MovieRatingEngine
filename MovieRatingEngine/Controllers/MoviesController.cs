@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using MovieRatingEngine.Services;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MovieRatingEngine.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
 
@@ -27,6 +29,40 @@ namespace MovieRatingEngine.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> Get()
         {
             return Ok(await _moviesService.GetAllMovies());
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ServiceResponse<GetMovieDto>>> GetSingle(Guid id)
+        {
+            return Ok(await _moviesService.GetMovieById(id));
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie(AddMovieDto newMovie)
+        {
+            return Ok(await _moviesService.AddMovie(newMovie));
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie(UpdateMovieDto updateMovie)
+        {
+            var response = await _moviesService.UpdateMovie(updateMovie);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> DeleteMovie(Guid id)
+        {
+            var response = await _moviesService.DeleteMovie(id);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
     }
 }
