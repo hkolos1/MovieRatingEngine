@@ -21,8 +21,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Profiles\" />
-  </ItemGroup>
-
 </Project>
