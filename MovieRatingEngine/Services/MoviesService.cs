@@ -31,15 +31,36 @@ namespace MovieRatingEngine.Services
         public async Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies()
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
-            serviceResponse.Data = _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToList();
+            try
+            {
+                serviceResponse.Data = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
             return await Task.FromResult(serviceResponse);
         }
 
         public async Task<ServiceResponse<GetMovieDto>> GetMovieById(Guid id)
         {
             var serviceResponse = new ServiceResponse<GetMovieDto>();
-            var dbCharacter = await _context.Movies.FirstOrDefaultAsync(c => c.Id == c.Id);
-            serviceResponse.Data = _mapper.Map<GetMovieDto>(dbCharacter);
+            try
+            {
+                var dbCharacter = await _context.Movies.FirstOrDefaultAsync(c => c.Id == id);
+                if (dbCharacter == null)
+                    throw new Exception("Movie not found.");
+                serviceResponse.Data = _mapper.Map<GetMovieDto>(dbCharacter);
+
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
             return serviceResponse;
         }
 
@@ -47,13 +68,21 @@ namespace MovieRatingEngine.Services
         public async Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie)
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
-            Movie movie = _mapper.Map<Movie>(newMovie);
-            movie.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
-            movie.UserId = GetUserId();
-            _context.Movies.Add(movie);
+            try
+            {
+                Movie movie = _mapper.Map<Movie>(newMovie);
+                movie.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+                movie.UserId = GetUserId();
+                _context.Movies.Add(movie);
 
-            await _context.SaveChangesAsync();
-            serviceResponse.Data = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
             return serviceResponse;
         }
 
@@ -89,6 +118,8 @@ namespace MovieRatingEngine.Services
             try
             {
                 Movie movie = await _context.Movies.FirstAsync(c => c.Id == c.Id);
+                if (movie == null)
+                    throw new Exception("Movie not found.");
                 _context.Movies.Remove(movie);
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToList();
