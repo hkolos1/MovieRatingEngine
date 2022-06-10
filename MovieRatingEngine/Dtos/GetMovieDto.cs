@@ -1,6 +1,8 @@
-﻿using MovieRatingEngine.Models;
+﻿using Microsoft.AspNetCore.Http;
+using MovieRatingEngine.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieRatingEngine.Dtos
 {
@@ -12,8 +14,16 @@ namespace MovieRatingEngine.Dtos
         public double AverageRating { get; set; }
         public string Type { get; set; }
         public DateTime ReleaseDate { get; set; }
-        public List<Models.Actor> Actors { get; set; }
-        public string PhotoUrl { get; set; }
+        public List<Actor.GetActorDto> Actors { get; set; }
+        //public string PhotoUrl { get; set; }
+
+       // public byte[] ImageByteArray { get; set; }
+        public string ImageName { get; set; }
+
+        [NotMapped]
+        public IFormFile ImageFile { get; set; }
+        [NotMapped]
+        public string ImageSource { get; set; }
 
     }
 }

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
+using MovieRatingEngine.Helpers;
 using MovieRatingEngine.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -19,13 +21,14 @@ namespace MovieRatingEngine.Services
         private readonly IMapper _mapper;
         private readonly MovieContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IImageHelper _imageHelper;
 
-        public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor)
+        public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor,IImageHelper imageHelper)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-
+            _imageHelper = imageHelper;
         }
 
         public async Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies()
@@ -33,7 +36,12 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
             {
-                serviceResponse.Data = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                var mapped = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                foreach (var movie in mapped)
+                {
+                    _imageHelper.SetImageSource(movie);
+                }
+                serviceResponse.Data = mapped;
 
             }
             catch (Exception ex)
@@ -53,7 +61,9 @@ namespace MovieRatingEngine.Services
                 var dbCharacter = await _context.Movies.FirstOrDefaultAsync(c => c.Id == id);
                 if (dbCharacter == null)
                     throw new Exception("Movie not found.");
-                serviceResponse.Data = _mapper.Map<GetMovieDto>(dbCharacter);
+                var mapped = _mapper.Map<GetMovieDto>(dbCharacter);
+                _imageHelper.SetImageSource(mapped);
+                serviceResponse.Data = mapped;
 
             }
             catch (Exception ex)
@@ -73,10 +83,25 @@ namespace MovieRatingEngine.Services
                 Movie movie = _mapper.Map<Movie>(newMovie);
                 movie.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
                 movie.UserId = GetUserId();
+
+                movie.ImageName = _imageHelper.SaveImage(newMovie.ImageFile);
+
+                if (newMovie.ImageFile != null)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    newMovie.ImageFile.CopyTo(ms);
+                    movie.ImageByteArray = ms.ToArray();
+                }
                 _context.Movies.Add(movie);
 
                 await _context.SaveChangesAsync();
-                serviceResponse.Data = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+               
+                var mapped= await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                foreach (var m in mapped)
+                {
+                    _imageHelper.SetImageSource(m);
+                }
+                serviceResponse.Data = mapped;
             }
             catch (Exception ex)
             {
@@ -98,11 +123,25 @@ namespace MovieRatingEngine.Services
                 movie.Description = updatedMovie.Description;
                 movie.Type = updatedMovie.Type;
                 movie.ReleaseDate = updatedMovie.ReleaseDate;
-                movie.PhotoUrl = updatedMovie.PhotoUrl;
+                
+                if (updatedMovie.ImageFile != null)
+                {
+                    //delete from file
+                    _imageHelper.DeleteImage(movie.ImageName);
+                    movie.ImageName=_imageHelper.SaveImage(updatedMovie.ImageFile);
+                    
+                    
+                    MemoryStream ms = new MemoryStream();
+                    updatedMovie.ImageFile.CopyTo(ms);
+                    movie.ImageByteArray = ms.ToArray();
+                }
+                
 
                 await _context.SaveChangesAsync();
 
-                serviceResponse.Data = _mapper.Map<GetMovieDto>(movie);
+                var mapped = _mapper.Map<GetMovieDto>(movie);
+                _imageHelper.SetImageSource(mapped);
+                serviceResponse.Data = mapped;
             }
             catch (Exception ex)
             {
@@ -117,9 +156,11 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
             {
-                Movie movie = await _context.Movies.FirstAsync(c => c.Id == c.Id);
+                Movie movie = await _context.Movies.FirstAsync(c => c.Id == id);
                 if (movie == null)
                     throw new Exception("Movie not found.");
+
+                _imageHelper.DeleteImage(movie.ImageName);
                 _context.Movies.Remove(movie);
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToList();
