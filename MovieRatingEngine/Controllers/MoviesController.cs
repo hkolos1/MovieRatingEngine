@@ -40,15 +40,17 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(Role.Admin))]
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie(AddMovieDto newMovie)
+
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromForm]AddMovieDto newMovie)
+
         {
             return Ok(await _moviesService.AddMovie(newMovie));
         }
 
         [HttpPut]
-        [Authorize(Roles = nameof(Role.Admin))]
-        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie(UpdateMovieDto updateMovie)
+
+        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromForm]UpdateMovieDto updateMovie)
+
         {
             var response = await _moviesService.UpdateMovie(updateMovie);
             if (response.Data == null)

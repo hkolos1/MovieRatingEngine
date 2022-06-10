@@ -13,10 +13,13 @@ namespace MovieRatingEngine.Models
         public string Type { get; set; }
         public DateTime ReleaseDate { get; set; }
         public List<Actor> Actors { get; set; }
-        public string PhotoUrl { get; set; }
+       
 
         public Guid UserId { get; set; }
         public User User { get; set; }
+
+        public byte[] ImageByteArray { get; set; }
+        public string ImageName { get; set; }
 
     }
 }
