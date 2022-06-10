@@ -9,6 +9,7 @@ using MovieRatingEngine.Services;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Models;
 using Microsoft.AspNetCore.Authorization;
+using MovieRatingEngine.Data;
 
 namespace MovieRatingEngine.Controllers
 {
@@ -19,9 +20,28 @@ namespace MovieRatingEngine.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IMoviesService _moviesService;
-        public MoviesController(IMoviesService movieService)
+        private MovieContext _movieContext;
+        public MoviesController(IMoviesService movieService, MovieContext movieContext)
         {
             _moviesService = movieService;
+            _movieContext = movieContext;
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult PagingMovie(int? pageNumber, int? pageSize)
+        {
+            var movies = _movieContext.Movies;
+            var currentPageNumber = pageNumber ?? 1;
+            var currentPageSize = pageSize ?? 10;
+
+            return Ok(movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize));
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult SearchMovie(string Title, string ReleaseDate)
+        {
+            var movies = _movieContext.Movies.Where(q => q.Title.StartsWith(Title));
+            return Ok(movies);
         }
 
 
