@@ -14,7 +14,7 @@ namespace MovieRatingEngine.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
 
     public class MoviesController : ControllerBase
     {
@@ -26,25 +26,31 @@ namespace MovieRatingEngine.Controllers
 
 
         [HttpGet("GetAll")]
+        [Authorize(Roles = nameof(Role.Admin) + ", " + nameof(Role.User))]
         public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> Get()
         {
             return Ok(await _moviesService.GetAllMovies());
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = nameof(Role.Admin) + ", " + nameof(Role.User))]
         public async Task<ActionResult<ServiceResponse<GetMovieDto>>> GetSingle(Guid id)
         {
             return Ok(await _moviesService.GetMovieById(id));
         }
 
         [HttpPost]
+
         public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromForm]AddMovieDto newMovie)
+
         {
             return Ok(await _moviesService.AddMovie(newMovie));
         }
 
         [HttpPut]
+
         public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromForm]UpdateMovieDto updateMovie)
+
         {
             var response = await _moviesService.UpdateMovie(updateMovie);
             if (response.Data == null)
@@ -55,6 +61,7 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = nameof(Role.Admin))]
         public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> DeleteMovie(Guid id)
         {
             var response = await _moviesService.DeleteMovie(id);
