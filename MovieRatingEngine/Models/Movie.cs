@@ -21,5 +21,7 @@ namespace MovieRatingEngine.Models
         public byte[] ImageByteArray { get; set; }
         public string ImageName { get; set; }
 
+        public List<Rating> Ratings { get; set; }
+
     }
 }

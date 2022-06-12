@@ -10,20 +10,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MovieRatingEngine.Services
 {
     public class MoviesService : IMoviesService
     {
-       
+
         private readonly IMapper _mapper;
         private readonly MovieContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IImageHelper _imageHelper;
 
-        public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor,IImageHelper imageHelper)
+        public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor, IImageHelper imageHelper)
         {
             _context = context;
             _mapper = mapper;
@@ -95,8 +94,8 @@ namespace MovieRatingEngine.Services
                 _context.Movies.Add(movie);
 
                 await _context.SaveChangesAsync();
-               
-                var mapped= await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+
+                var mapped = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var m in mapped)
                 {
                     _imageHelper.SetImageSource(m);
@@ -123,19 +122,19 @@ namespace MovieRatingEngine.Services
                 movie.Description = updatedMovie.Description;
                 movie.Type = updatedMovie.Type;
                 movie.ReleaseDate = updatedMovie.ReleaseDate;
-                
+
                 if (updatedMovie.ImageFile != null)
                 {
                     //delete from file
                     _imageHelper.DeleteImage(movie.ImageName);
-                    movie.ImageName=_imageHelper.SaveImage(updatedMovie.ImageFile);
-                    
-                    
+                    movie.ImageName = _imageHelper.SaveImage(updatedMovie.ImageFile);
+
+
                     MemoryStream ms = new MemoryStream();
                     updatedMovie.ImageFile.CopyTo(ms);
                     movie.ImageByteArray = ms.ToArray();
                 }
-                
+
 
                 await _context.SaveChangesAsync();
 
@@ -173,6 +172,24 @@ namespace MovieRatingEngine.Services
             return serviceResponse;
         }
 
+        public async Task<string> SetRating(Movie movie, int yourRating)
+        {
+
+            if (movie == null)
+                return "Movie not found.";
+            try
+            {
+                 movie.AverageRating = Math.Round(await _context.Ratings.Where(x => x.MovieId == movie.Id).AverageAsync(x => x.YourRating), 1);
+                 await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return null;
+        }
     }
 
 }
