@@ -10,7 +10,7 @@ namespace MovieRatingEngine.Dtos
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public string Type { get; set; }
+        public Category Type { get; set; }
         public DateTime ReleaseDate { get; set; }
 
         //public List<Actor> Actors { get; set; }

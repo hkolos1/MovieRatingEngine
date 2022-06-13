@@ -84,6 +84,11 @@ namespace MovieRatingEngine.Services
                 movie.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
                 movie.UserId = GetUserId();
 
+                if (newMovie.Type == Category.Movie)
+                    movie.Type = Category.Movie.ToString();
+                else
+                    movie.Type = Category.TvShow.ToString();
+
                 movie.ImageName = _imageHelper.SaveImage(newMovie.ImageFile);
 
                 if (newMovie.ImageFile != null)
@@ -121,7 +126,7 @@ namespace MovieRatingEngine.Services
 
                 movie.Title = updatedMovie.Title;
                 movie.Description = updatedMovie.Description;
-                movie.Type = updatedMovie.Type;
+                movie.Type = updatedMovie.Type.ToString();
                 movie.ReleaseDate = updatedMovie.ReleaseDate;
                 
                 if (updatedMovie.ImageFile != null)
