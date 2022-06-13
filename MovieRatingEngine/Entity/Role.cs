@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MovieRatingEngine.Models
+namespace MovieRatingEngine.Entity
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
 

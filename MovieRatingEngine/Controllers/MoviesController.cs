@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MovieRatingEngine.Services;
 using MovieRatingEngine.Dtos;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using Microsoft.AspNetCore.Authorization;
 using MovieRatingEngine.Data;
 

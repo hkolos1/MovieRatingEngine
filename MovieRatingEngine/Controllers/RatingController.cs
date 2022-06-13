@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.Rating;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using MovieRatingEngine.Services;
 using System;
 using System.Threading.Tasks;

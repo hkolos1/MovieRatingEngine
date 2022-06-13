@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.Rating;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +41,7 @@ namespace MovieRatingEngine.Services
                 return "Rating format is not accepted. It should be in range of 1 to 5";
             try
             {
-                var rating = _mapper.Map<Models.Rating>(request);
+                var rating = _mapper.Map<Entity.Rating>(request);
                 rating.UserId = GetUserId();
                 rating.CreatedAt = DateTime.Now;
 

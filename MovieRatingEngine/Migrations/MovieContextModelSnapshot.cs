@@ -34,7 +34,7 @@ namespace MovieRatingEngine.Migrations
                     b.ToTable("ActorMovie");
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.Actor", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.Actor", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace MovieRatingEngine.Migrations
                     b.ToTable("Actors");
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.Movie", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.Movie", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +88,7 @@ namespace MovieRatingEngine.Migrations
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.Rating", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.Rating", b =>
                 {
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uniqueidentifier");
@@ -109,7 +109,7 @@ namespace MovieRatingEngine.Migrations
                     b.ToTable("Ratings");
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.User", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,22 +140,22 @@ namespace MovieRatingEngine.Migrations
 
             modelBuilder.Entity("ActorMovie", b =>
                 {
-                    b.HasOne("MovieRatingEngine.Models.Actor", null)
+                    b.HasOne("MovieRatingEngine.Entity.Actor", null)
                         .WithMany()
                         .HasForeignKey("ActorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieRatingEngine.Models.Movie", null)
+                    b.HasOne("MovieRatingEngine.Entity.Movie", null)
                         .WithMany()
                         .HasForeignKey("MoviesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.Movie", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.Movie", b =>
                 {
-                    b.HasOne("MovieRatingEngine.Models.User", "User")
+                    b.HasOne("MovieRatingEngine.Entity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -164,15 +164,15 @@ namespace MovieRatingEngine.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.Rating", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.Rating", b =>
                 {
-                    b.HasOne("MovieRatingEngine.Models.Movie", "Movie")
+                    b.HasOne("MovieRatingEngine.Entity.Movie", "Movie")
                         .WithMany("Ratings")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieRatingEngine.Models.User", "User")
+                    b.HasOne("MovieRatingEngine.Entity.User", "User")
                         .WithMany("Ratings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -183,12 +183,12 @@ namespace MovieRatingEngine.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.Movie", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.Movie", b =>
                 {
                     b.Navigation("Ratings");
                 });
 
-            modelBuilder.Entity("MovieRatingEngine.Models.User", b =>
+            modelBuilder.Entity("MovieRatingEngine.Entity.User", b =>
                 {
                     b.Navigation("Ratings");
                 });

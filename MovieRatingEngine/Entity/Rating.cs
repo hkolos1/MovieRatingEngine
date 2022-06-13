@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MovieRatingEngine.Models
+namespace MovieRatingEngine.Entity
 {
     public class Rating
     {

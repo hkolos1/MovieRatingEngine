@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MovieRatingEngine.Models
+namespace MovieRatingEngine.Entity
 {
     public class Movie
     {

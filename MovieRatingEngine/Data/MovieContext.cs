@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MovieRatingEngine.Data

@@ -1,4 +1,4 @@
-﻿using MovieRatingEngine.Models;
+﻿using MovieRatingEngine.Entity;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 

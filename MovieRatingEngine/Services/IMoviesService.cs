@@ -1,5 +1,5 @@
 ﻿using MovieRatingEngine.Dtos;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -1,6 +1,6 @@
 ﻿using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.User;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Threading.Tasks;
 

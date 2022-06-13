@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Helpers;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.IO;
