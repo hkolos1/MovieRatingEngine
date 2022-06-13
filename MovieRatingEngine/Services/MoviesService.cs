@@ -178,6 +178,28 @@ namespace MovieRatingEngine.Services
             return serviceResponse;
         }
 
+        public async Task<List<GetMovieDto>> PagingMovie(int? pageNumber, int? pageSize)
+        {
+            var movies = await _context.Movies.Include(x => x.Actors).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+            foreach (var movie in movies)
+            {
+                _imageHelper.SetImageSource(movie);
+            }
+            var currentPageNumber = pageNumber ?? 1;
+            var currentPageSize = pageSize ?? 10;
+
+            return movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize).ToList();
+        }
+
+        public async Task<List<GetMovieDto>> SearchMovie(string title, string releaseDate)
+        {
+            var movies = await _context.Movies.Include(x=>x.Actors).Where(q => q.Title.StartsWith(title)).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+            foreach (var movie in movies)
+            {
+                _imageHelper.SetImageSource(movie);
+            }
+            return _mapper.Map<List<GetMovieDto>>(movies);
+        }
     }
 
 }
