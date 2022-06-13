@@ -6,13 +6,13 @@ namespace MovieRatingEngine.Profiles
     {
         public MoviesProfile()
         {
-            CreateMap<Models.Movie, Dtos.GetMovieDto>();
-            CreateMap<Models.Movie, Dtos.AddMovieDto>();
-            CreateMap<Models.Movie, Dtos.UpdateMovieDto>();
+            CreateMap<Entity.Movie, Dtos.GetMovieDto>();
+            CreateMap<Entity.Movie, Dtos.AddMovieDto>();
+            CreateMap<Entity.Movie, Dtos.UpdateMovieDto>();
 
-            CreateMap<Models.Movie, Dtos.GetMovieDto>().ReverseMap();
-            CreateMap<Models.Movie, Dtos.AddMovieDto>().ReverseMap();
-            CreateMap<Models.Movie, Dtos.UpdateMovieDto>().ReverseMap();
+            CreateMap<Entity.Movie, Dtos.GetMovieDto>().ReverseMap();
+            CreateMap<Entity.Movie, Dtos.AddMovieDto>().ReverseMap();
+            CreateMap<Entity.Movie, Dtos.UpdateMovieDto>().ReverseMap();
 
         }
     }

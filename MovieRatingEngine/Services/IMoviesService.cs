@@ -1,5 +1,5 @@
 ﻿using MovieRatingEngine.Dtos;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,10 +16,6 @@ namespace MovieRatingEngine.Services
         Task<ServiceResponse<GetMovieDto>> UpdateMovie(UpdateMovieDto updatedMovie);
 
         Task<ServiceResponse<List<GetMovieDto>>> DeleteMovie(Guid id);
-
-
-
-
-
+        Task<string> SetRating(Movie movie, int yourRating);
     }
 }

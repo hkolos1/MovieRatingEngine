@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
