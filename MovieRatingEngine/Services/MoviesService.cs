@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
@@ -21,13 +21,19 @@ namespace MovieRatingEngine.Services
         private readonly MovieContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IImageHelper _imageHelper;
+        private readonly IActorMovieService _actorMovieService;
+        private readonly IActorService _actorService;
 
-        public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor, IImageHelper imageHelper)
+
+        public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor, IImageHelper imageHelper, IActorMovieService actorMovieService, IActorService actorService)
+
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _imageHelper = imageHelper;
+            _actorMovieService = actorMovieService;
+            _actorService = actorService;
         }
 
         public async Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies()
@@ -35,7 +41,7 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
             {
-                var mapped = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                var mapped = await _context.Movies.Include(x => x.Actors).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var movie in mapped)
                 {
                     _imageHelper.SetImageSource(movie);
@@ -57,7 +63,7 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<GetMovieDto>();
             try
             {
-                var dbCharacter = await _context.Movies.FirstOrDefaultAsync(c => c.Id == id);
+                var dbCharacter = await _context.Movies.Include(x=>x.Actors).FirstOrDefaultAsync(c => c.Id == id);
                 if (dbCharacter == null)
                     throw new Exception("Movie not found.");
                 var mapped = _mapper.Map<GetMovieDto>(dbCharacter);
@@ -74,7 +80,7 @@ namespace MovieRatingEngine.Services
         }
 
         private Guid GetUserId() => Guid.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-        public async Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie)
+        public async Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie)//, List<AddActorDto> addNewActors)
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
@@ -94,6 +100,28 @@ namespace MovieRatingEngine.Services
                 _context.Movies.Add(movie);
 
                 await _context.SaveChangesAsync();
+
+                var movieActor = await _context.Movies.Include(x => x.Actors).FirstOrDefaultAsync(x => x == movie);
+                //handling actors 
+                //list of actor Ids 
+                if (newMovie.ActorIds.Count > 0)
+                {
+                    foreach (var actorId in newMovie.ActorIds)
+                    {
+                        var ex = await _actorMovieService.AddActorToMovie(actorId, movieActor);
+                        if (ex == null)
+                            serviceResponse.Message += ex;
+
+                    }
+                }
+                //list of new actors that needs to be added to database
+
+                foreach (var actorDto in newMovie.NewActors)
+                {
+                    var ex = await _actorMovieService.AddNewActorToMovie(actorDto, movieActor);
+                    if (ex == null)
+                        serviceResponse.Message += ex;
+                }
 
                 var mapped = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var m in mapped)
@@ -137,6 +165,28 @@ namespace MovieRatingEngine.Services
 
 
                 await _context.SaveChangesAsync();
+                var movieActor = await _context.Movies.Include(x => x.Actors).FirstOrDefaultAsync(x => x == movie);
+                //handling actors 
+                //list of actor Ids 
+                if (updatedMovie.ActorIds.Count > 0)
+                {
+                    foreach (var actorId in updatedMovie.ActorIds)
+                    {
+                        var ex = await _actorMovieService.AddActorToMovie(actorId, movieActor);
+                        if (ex == null)
+                            serviceResponse.Message += ex;
+
+                    }
+                }
+                //list of new actors that needs to be added to database
+
+                foreach (var actorDto in updatedMovie.NewActors)
+                {
+                    var ex = await _actorMovieService.AddNewActorToMovie(actorDto, movieActor);
+                    if (ex == null)
+                        serviceResponse.Message += ex;
+                }
+
 
                 var mapped = _mapper.Map<GetMovieDto>(movie);
                 _imageHelper.SetImageSource(mapped);
@@ -190,6 +240,7 @@ namespace MovieRatingEngine.Services
 
             return null;
         }
+
     }
 
 }
