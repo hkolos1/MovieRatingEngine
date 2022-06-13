@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.Actor;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
