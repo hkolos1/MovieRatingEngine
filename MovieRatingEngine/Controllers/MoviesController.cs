@@ -1,15 +1,13 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieRatingEngine.Data;
+using MovieRatingEngine.Dtos;
+using MovieRatingEngine.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using MovieRatingEngine.Services;
-using MovieRatingEngine.Dtos;
-using MovieRatingEngine.Models;
-using Microsoft.AspNetCore.Authorization;
-using MovieRatingEngine.Data;
+using MovieRatingEngine.Entity;
 
 namespace MovieRatingEngine.Controllers
 {
@@ -20,11 +18,13 @@ namespace MovieRatingEngine.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IMoviesService _moviesService;
+        private readonly IActorMovieService _actorMovieService;
         private MovieContext _movieContext;
-        public MoviesController(IMoviesService movieService, MovieContext movieContext)
+        public MoviesController(IMoviesService movieService, MovieContext movieContext, IActorMovieService actorMovieService)
         {
             _moviesService = movieService;
             _movieContext = movieContext;
+            _actorMovieService = actorMovieService;
         }
 
         [HttpGet("[action]")]
@@ -56,15 +56,15 @@ namespace MovieRatingEngine.Controllers
 
         [HttpPost]
 
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromForm]AddMovieDto newMovie)
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromBody] AddMovieDto newMovie)//, [FromBody]List<AddActorDto> addNewActors)
 
         {
-            return Ok(await _moviesService.AddMovie(newMovie));
+            return Ok(await _moviesService.AddMovie(newMovie));//, addNewActors));
         }
 
         [HttpPut]
 
-        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromForm]UpdateMovieDto updateMovie)
+        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromForm] UpdateMovieDto updateMovie)
 
         {
             var response = await _moviesService.UpdateMovie(updateMovie);
@@ -85,6 +85,23 @@ namespace MovieRatingEngine.Controllers
                 return NotFound(response);
             }
             return Ok(response);
+        }
+        [HttpDelete("deleteactor/{movieId}/{actorId}")]
+        [Authorize(Roles = nameof(Role.Admin))]
+        public async Task<IActionResult> DeleteMovie(Guid movieId, Guid actorId)
+        {
+            var response = await _actorMovieService.DeleteActorFromMovie(actorId, movieId);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+            return Ok();
+        }
+        [HttpPost("{movieId}")]
+        [Authorize(Roles = nameof(Role.Admin))]
+        public async Task<IActionResult> AddActorToMovie(Guid movieId, AddActorsToMovie request)
+        {
+            return Ok(await _actorMovieService.AddActortToMovie(movieId, request));
         }
     }
 }

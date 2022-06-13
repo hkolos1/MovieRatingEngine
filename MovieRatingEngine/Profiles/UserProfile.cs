@@ -6,11 +6,11 @@ namespace MovieRatingEngine.Profiles
     {
         public UserProfile()
         {
-            CreateMap<Models.User, Dtos.User.UserAddDto>();
-            CreateMap<Models.User, Dtos.User.UserLoginDto>();
+            CreateMap<Entity.User, Dtos.User.UserAddDto>();
+            CreateMap<Entity.User, Dtos.User.UserLoginDto>();
 
-            CreateMap<Models.User, Dtos.User.UserAddDto>().ReverseMap();
-            CreateMap<Models.User, Dtos.User.UserLoginDto>().ReverseMap();
+            CreateMap<Entity.User, Dtos.User.UserAddDto>().ReverseMap();
+            CreateMap<Entity.User, Dtos.User.UserLoginDto>().ReverseMap();
 
         }
     }

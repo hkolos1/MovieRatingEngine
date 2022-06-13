@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace MovieRatingEngine.Models
+namespace MovieRatingEngine.Entity
 {
     public class User
     {
@@ -11,6 +12,9 @@ namespace MovieRatingEngine.Models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string Role { get; set; }
+
+        public  List<Rating> Ratings { get; set; }
+
 
     }
 }
