@@ -1,10 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Helpers;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +24,9 @@ namespace MovieRatingEngine.Services
         private readonly IActorMovieService _actorMovieService;
         private readonly IActorService _actorService;
 
+
         public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor, IImageHelper imageHelper, IActorMovieService actorMovieService, IActorService actorService)
+
         {
             _context = context;
             _mapper = mapper;
@@ -120,8 +122,6 @@ namespace MovieRatingEngine.Services
                     if (ex == null)
                         serviceResponse.Message += ex;
                 }
-
-
 
                 var mapped = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var m in mapped)
@@ -222,6 +222,24 @@ namespace MovieRatingEngine.Services
             return serviceResponse;
         }
 
+        public async Task<string> SetRating(Movie movie, int yourRating)
+        {
+
+            if (movie == null)
+                return "Movie not found.";
+            try
+            {
+                 movie.AverageRating = Math.Round(await _context.Ratings.Where(x => x.MovieId == movie.Id).AverageAsync(x => x.YourRating), 1);
+                 await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return null;
+        }
 
     }
 

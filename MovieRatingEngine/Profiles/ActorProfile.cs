@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MovieRatingEngine.Dtos.Actor;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 
 namespace MovieRatingEngine.Profiles
 {
