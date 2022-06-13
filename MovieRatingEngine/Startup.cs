@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Helpers;
+using MovieRatingEngine.Middleware;
 using MovieRatingEngine.Services;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Filters;
@@ -95,6 +96,8 @@ namespace MovieRatingEngine
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "Images")),
                 RequestPath = "/Images"
             });
+
+            app.UseMiddleware<ErrorHandling>();
 
             app.UseHttpsRedirection();
 

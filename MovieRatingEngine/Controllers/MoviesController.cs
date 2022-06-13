@@ -38,9 +38,9 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult SearchMovie(string Title, string ReleaseDate)
+        public IActionResult SearchMovie(string Title)
         {
-            var movies = _movieContext.Movies.Where(q => q.Title.StartsWith(Title));
+            var movies = _movieContext.Movies.Where(q => q.Title.Contains(Title));
             return Ok(movies);
         }
 
