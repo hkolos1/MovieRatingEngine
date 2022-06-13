@@ -28,20 +28,15 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult PagingMovie(int? pageNumber, int? pageSize)
+        public async Task<IActionResult> PagingMovie(int? pageNumber, int? pageSize)
         {
-            var movies = _movieContext.Movies;
-            var currentPageNumber = pageNumber ?? 1;
-            var currentPageSize = pageSize ?? 10;
-
-            return Ok(movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize));
+            return Ok(await  _moviesService.PagingMovie(pageNumber, pageSize));
         }
 
         [HttpGet("[action]")]
-        public IActionResult SearchMovie(string Title, string ReleaseDate)
+        public async  Task<IActionResult> SearchMovie(string Title, string ReleaseDate)
         {
-            var movies = _movieContext.Movies.Where(q => q.Title.StartsWith(Title));
-            return Ok(movies);
+            return Ok(await _moviesService.SearchMovie(Title, ReleaseDate));
         }
 
 
