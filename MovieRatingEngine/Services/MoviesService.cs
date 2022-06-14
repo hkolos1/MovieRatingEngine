@@ -173,6 +173,10 @@ namespace MovieRatingEngine.Services
             return serviceResponse;
         }
 
+        public async Task<object> TestErrorMiddleware()
+        {
+            return await _context.Movies.FindAsync();
+        }
     }
 
 }

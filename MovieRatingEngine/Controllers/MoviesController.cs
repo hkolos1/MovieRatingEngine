@@ -43,7 +43,12 @@ namespace MovieRatingEngine.Controllers
             var movies = _movieContext.Movies.Where(q => q.Title.Contains(Title));
             return Ok(movies);
         }
-
+        
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ProuzrokujServerError()
+        {
+            return Ok(await _moviesService.TestErrorMiddleware());
+        }
 
         [HttpGet("GetAll")]
         [Authorize(Roles = nameof(Role.Admin) + ", " + nameof(Role.User))]

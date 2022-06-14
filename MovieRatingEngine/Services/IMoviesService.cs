@@ -16,10 +16,6 @@ namespace MovieRatingEngine.Services
         Task<ServiceResponse<GetMovieDto>> UpdateMovie(UpdateMovieDto updatedMovie);
 
         Task<ServiceResponse<List<GetMovieDto>>> DeleteMovie(Guid id);
-
-
-
-
-
+        Task<object> TestErrorMiddleware();
     }
 }

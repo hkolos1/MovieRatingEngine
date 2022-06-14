@@ -2,14 +2,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieRatingEngine.Data;
@@ -18,11 +15,7 @@ using MovieRatingEngine.Middleware;
 using MovieRatingEngine.Services;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Filters;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MovieRatingEngine
 {
@@ -61,7 +54,7 @@ namespace MovieRatingEngine
             });
 
             services.AddAutoMapper(typeof(Startup));
-            
+
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMoviesService, MoviesService>();
             services.AddScoped<IActorService, ActorService>();
@@ -86,10 +79,10 @@ namespace MovieRatingEngine
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRatingEngine v1"));
+                //app.UseDeveloperExceptionPage();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRatingEngine v1"));
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -97,7 +90,7 @@ namespace MovieRatingEngine
                 RequestPath = "/Images"
             });
 
-            app.UseMiddleware<ErrorHandling>();
+            app.UseMiddleware<ErrorMiddleware>();
 
             app.UseHttpsRedirection();
 
