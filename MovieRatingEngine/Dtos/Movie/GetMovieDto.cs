@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MovieRatingEngine.Dtos
+namespace MovieRatingEngine.Dtos.Movie
 {
     public class GetMovieDto
     {
@@ -17,7 +17,7 @@ namespace MovieRatingEngine.Dtos
         public List<Actor.GetActorDto> Actors { get; set; }
         //public string PhotoUrl { get; set; }
 
-       // public byte[] ImageByteArray { get; set; }
+        // public byte[] ImageByteArray { get; set; }
         public string ImageName { get; set; }
 
         [NotMapped]

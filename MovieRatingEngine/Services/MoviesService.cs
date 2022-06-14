@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
-using MovieRatingEngine.Helpers;
+using MovieRatingEngine.Dtos.Movie;
 using MovieRatingEngine.Entity;
+using MovieRatingEngine.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,7 @@ namespace MovieRatingEngine.Services
         private readonly IImageHelper _imageHelper;
         private readonly IActorMovieService _actorMovieService;
         private readonly IActorService _actorService;
-
+        private readonly List<string> _genericSearchWords = new List<string> { "star", "at least", "year", "after", "older that" };
 
         public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor, IImageHelper imageHelper, IActorMovieService actorMovieService, IActorService actorService)
 
@@ -63,7 +64,7 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<GetMovieDto>();
             try
             {
-                var dbCharacter = await _context.Movies.Include(x=>x.Actors).FirstOrDefaultAsync(c => c.Id == id);
+                var dbCharacter = await _context.Movies.Include(x => x.Actors).FirstOrDefaultAsync(c => c.Id == id);
                 if (dbCharacter == null)
                     throw new Exception("Movie not found.");
                 var mapped = _mapper.Map<GetMovieDto>(dbCharacter);
@@ -242,24 +243,34 @@ namespace MovieRatingEngine.Services
 
         public async Task<List<GetMovieDto>> SearchMovie(string searchBar, Category type)
         {
-            /*if(searchBar.Length < 2)
+
+            var typeString = type == Category.Movie ? Category.Movie.ToString() : Category.TvShow.ToString();
+
+            if (searchBar == null || searchBar.Length < 2)
             {
-                return null;
-            }*/
-            //searchBar = searchBar.ToLower();
-            var movies = await _context.Movies.Include(x => x.Actors).
+                var movieList = await _context.Movies.Where(x => x.Type.ToLower().Equals(typeString)).OrderByDescending(x => x.AverageRating).Take(10).ToListAsync();
+                return _mapper.Map<List<GetMovieDto>>(movieList);
+            }
+            var queryMovies = _context.Movies.AsQueryable();
+            queryMovies = queryMovies.Where(x => x.Type.ToLower().Equals(typeString));
 
-                Where(q => q.Type == nameof(type) || 
-                q.Title.StartsWith(searchBar) || 
-                q.Description.StartsWith(searchBar)).ToListAsync();
-                
-            var map = _mapper.Map < List<GetMovieDto>>(movies);
+            if (searchBar != null)
+                queryMovies = queryMovies.Where(x =>
+                x.Title.ToLower().StartsWith(searchBar.ToLower()) ||
+                x.Description.ToLower().StartsWith(searchBar.ToLower())
+                );
 
-            foreach (var movie in map)
+            //need to add query for recognizing phrases like "5 stars", "at least 3 stars", "after 2015", "older than 5 years"
+            queryMovies = queryMovies.Include(x => x.Actors);
+
+            var listMovies = await queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToListAsync();
+
+
+            foreach (var movie in listMovies)
             {
                 _imageHelper.SetImageSource(movie);
             }
-            return map;
+            return listMovies;
         }
         public async Task<string> SetRating(Movie movie, int yourRating)
         {
@@ -268,8 +279,8 @@ namespace MovieRatingEngine.Services
                 return "Movie not found.";
             try
             {
-                 movie.AverageRating = Math.Round(await _context.Ratings.Where(x => x.MovieId == movie.Id).AverageAsync(x => x.YourRating), 1);
-                 await _context.SaveChangesAsync();
+                movie.AverageRating = Math.Round(await _context.Ratings.Where(x => x.MovieId == movie.Id).AverageAsync(x => x.YourRating), 1);
+                await _context.SaveChangesAsync();
 
             }
             catch (Exception ex)

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
+using MovieRatingEngine.Dtos.Movie;
 using MovieRatingEngine.Dtos.User;
 using MovieRatingEngine.Entity;
 using System;

@@ -1,4 +1,5 @@
 ﻿using MovieRatingEngine.Dtos;
+using MovieRatingEngine.Dtos.Movie;
 using MovieRatingEngine.Dtos.Rating;
 using System;
 using System.Collections.Generic;

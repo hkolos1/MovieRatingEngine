@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieRatingEngine.Data;
-using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MovieRatingEngine.Entity;
+using MovieRatingEngine.Dtos.Movie;
+using MovieRatingEngine.Dtos;
 
 namespace MovieRatingEngine.Controllers
 {
@@ -34,7 +35,7 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("[action]")]
-        public async  Task<IActionResult> SearchMovie(string searchBar, Category type)
+        public async  Task<IActionResult> SearchMovie(string searchBar, Category type=Category.Movie)
         {
             return Ok(await _moviesService.SearchMovie(searchBar, type));
         }

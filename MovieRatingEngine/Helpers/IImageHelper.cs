@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using MovieRatingEngine.Dtos;
+using MovieRatingEngine.Dtos.Movie;
 
 namespace MovieRatingEngine.Helpers
 {

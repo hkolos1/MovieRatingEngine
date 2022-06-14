@@ -1,5 +1,6 @@
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.Actor;
+using MovieRatingEngine.Dtos.Movie;
 using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
