@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Helpers;
+using MovieRatingEngine.Middleware;
 using MovieRatingEngine.Services;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Filters;
@@ -83,16 +84,18 @@ namespace MovieRatingEngine
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRatingEngine v1"));
+                //app.UseDeveloperExceptionPage();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRatingEngine v1"));
 
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "Images")),
                 RequestPath = "/Images"
             });
+
+            app.UseMiddleware<ErrorMiddleware>();
 
             app.UseHttpsRedirection();
 

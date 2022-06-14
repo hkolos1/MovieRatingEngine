@@ -34,11 +34,17 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("[action]")]
+
         public async  Task<IActionResult> SearchMovie(string Title, string ReleaseDate)
         {
             return Ok(await _moviesService.SearchMovie(Title, ReleaseDate));
         }
-
+        
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ProuzrokujServerError()
+        {
+            return Ok(await _moviesService.TestErrorMiddleware());
+        }
 
         [HttpGet("GetAll")]
         [Authorize(Roles = nameof(Role.Admin) + ", " + nameof(Role.User))]

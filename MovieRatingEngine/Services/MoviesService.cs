@@ -227,6 +227,11 @@ namespace MovieRatingEngine.Services
             return serviceResponse;
         }
 
+        public async Task<object> TestErrorMiddleware()
+        {
+            return await _context.Movies.FindAsync();
+        }
+
         public async Task<List<GetMovieDto>> PagingMovie(int? pageNumber, int? pageSize)
         {
             var movies = await _context.Movies.Include(x => x.Actors).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
@@ -267,7 +272,6 @@ namespace MovieRatingEngine.Services
 
             return null;
         }
-
     }
 
 }
