@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MovieRatingEngine.Data
@@ -14,5 +14,11 @@ namespace MovieRatingEngine.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Actor> Actors { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Rating>().HasKey(x => new { x.MovieId, x.UserId });
+        }
     }
 }

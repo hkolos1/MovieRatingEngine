@@ -1,4 +1,4 @@
-﻿using MovieRatingEngine.Models;
+﻿using MovieRatingEngine.Entity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieRatingEngine.Dtos.User

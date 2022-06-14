@@ -36,6 +36,8 @@ namespace MovieRatingEngine
             {
                 setupAction.SerializerSettings.ContractResolver =
                 new CamelCasePropertyNamesContractResolver();
+                setupAction.SerializerSettings.ReferenceLoopHandling =
+                Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
             services.AddDbContext<MovieContext>(opt =>
               opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -58,6 +60,9 @@ namespace MovieRatingEngine
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMoviesService, MoviesService>();
             services.AddScoped<IActorService, ActorService>();
+            services.AddScoped<IActorMovieService, ActorMovieService>();
+            services.AddScoped<IRatingService, RatingService>();
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(opt =>

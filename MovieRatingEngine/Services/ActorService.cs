@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.Actor;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +57,15 @@ namespace MovieRatingEngine.Services
 
 
             return response;
+        }
+        public async Task<Actor>AddNewActor(AddActorDto request)
+        {
+            if (_db.Actors.Any(x => x.FirstName == request.FirstName && x.LastName == request.LastName))
+                return null;
+            var actor = _mapper.Map<Actor>(request);
+            await _db.Actors.AddAsync(actor);
+            await _db.SaveChangesAsync();
+            return actor;
         }
 
         public async Task<ServiceResponse<List<GetActorDto>>> DeleteActor(Guid id)
@@ -172,6 +181,14 @@ namespace MovieRatingEngine.Services
             }
 
             return response;
+        }
+
+        public async Task<Actor> CheckIfActorExists(Guid actorId)
+        {
+            var actor = await _db.Actors.FirstOrDefaultAsync(x => x.Id == actorId);
+            if (actor == null)
+                return null;
+            return actor;
         }
     }
 }

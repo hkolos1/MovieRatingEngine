@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MovieRatingEngine.Models
+namespace MovieRatingEngine.Entity
 {
     public class Actor
     {

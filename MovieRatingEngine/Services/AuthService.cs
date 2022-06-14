@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.User;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -69,7 +69,7 @@ namespace MovieRatingEngine.Services
             }
 
             CreatePasswordHash(req.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            var user = _mapper.Map<Models.User>(req);
+            var user = _mapper.Map<Entity.User>(req);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             

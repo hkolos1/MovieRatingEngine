@@ -1,5 +1,6 @@
-﻿using MovieRatingEngine.Dtos;
-using MovieRatingEngine.Models;
+using MovieRatingEngine.Dtos;
+using MovieRatingEngine.Dtos.Actor;
+using MovieRatingEngine.Entity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,11 +12,19 @@ namespace MovieRatingEngine.Services
         Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies();
         Task<ServiceResponse<GetMovieDto>> GetMovieById(Guid id);
 
-        Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie);
+        Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie);//, List<AddActorDto> addNewActors);
 
         Task<ServiceResponse<GetMovieDto>> UpdateMovie(UpdateMovieDto updatedMovie);
 
         Task<ServiceResponse<List<GetMovieDto>>> DeleteMovie(Guid id);
+
         Task<object> TestErrorMiddleware();
+
+
+        Task<List<GetMovieDto>> PagingMovie(int? pageNumber, int? pageSize);
+        Task<List<GetMovieDto>> SearchMovie(string title, string releaseDate);
+      
+        Task<string> SetRating(Movie movie, int yourRating);
+
     }
 }
