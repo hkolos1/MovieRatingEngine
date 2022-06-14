@@ -240,14 +240,26 @@ namespace MovieRatingEngine.Services
             return movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize).ToList();
         }
 
-        public async Task<List<GetMovieDto>> SearchMovie(string title, string releaseDate)
+        public async Task<List<GetMovieDto>> SearchMovie(string searchBar, Category type)
         {
-            var movies = await _context.Movies.Include(x=>x.Actors).Where(q => q.Title.StartsWith(title)).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
-            foreach (var movie in movies)
+            /*if(searchBar.Length < 2)
+            {
+                return null;
+            }*/
+            //searchBar = searchBar.ToLower();
+            var movies = await _context.Movies.Include(x => x.Actors).
+
+                Where(q => q.Type == nameof(type) || 
+                q.Title.StartsWith(searchBar) || 
+                q.Description.StartsWith(searchBar)).ToListAsync();
+                
+            var map = _mapper.Map < List<GetMovieDto>>(movies);
+
+            foreach (var movie in map)
             {
                 _imageHelper.SetImageSource(movie);
             }
-            return _mapper.Map<List<GetMovieDto>>(movies);
+            return map;
         }
         public async Task<string> SetRating(Movie movie, int yourRating)
         {

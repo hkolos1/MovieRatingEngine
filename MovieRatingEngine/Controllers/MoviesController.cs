@@ -34,9 +34,9 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("[action]")]
-        public async  Task<IActionResult> SearchMovie(string Title, string ReleaseDate)
+        public async  Task<IActionResult> SearchMovie(string searchBar, Category type)
         {
-            return Ok(await _moviesService.SearchMovie(Title, ReleaseDate));
+            return Ok(await _moviesService.SearchMovie(searchBar, type));
         }
 
 

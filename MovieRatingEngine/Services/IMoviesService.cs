@@ -19,7 +19,7 @@ namespace MovieRatingEngine.Services
         Task<ServiceResponse<List<GetMovieDto>>> DeleteMovie(Guid id);
 
         Task<List<GetMovieDto>> PagingMovie(int? pageNumber, int? pageSize);
-        Task<List<GetMovieDto>> SearchMovie(string title, string releaseDate);
+        Task<List<GetMovieDto>> SearchMovie(string searchBar, Category type);
       
         Task<string> SetRating(Movie movie, int yourRating);
 
