@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MovieRatingEngine.Services
@@ -24,7 +25,7 @@ namespace MovieRatingEngine.Services
         private readonly IImageHelper _imageHelper;
         private readonly IActorMovieService _actorMovieService;
         private readonly IActorService _actorService;
-        private readonly List<string> _genericSearchWords = new List<string> { "star", "at least", "year", "after", "older that" };
+        private readonly List<string> _genericSearchWords = new List<string> { "star", "at least", "year", "after", "older than" };
 
         public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor, IImageHelper imageHelper, IActorMovieService actorMovieService, IActorService actorService)
 
@@ -254,24 +255,69 @@ namespace MovieRatingEngine.Services
             var queryMovies = _context.Movies.AsQueryable();
             queryMovies = queryMovies.Where(x => x.Type.ToLower().Equals(typeString));
 
-            if (searchBar != null)
-                queryMovies = queryMovies.Where(x =>
-                x.Title.ToLower().StartsWith(searchBar.ToLower()) ||
-                x.Description.ToLower().StartsWith(searchBar.ToLower())
-                );
 
-            //need to add query for recognizing phrases like "5 stars", "at least 3 stars", "after 2015", "older than 5 years"
-            queryMovies = queryMovies.Include(x => x.Actors);
+            // recognizing phrases like "5 stars", "at least 3 stars", "after 2015", "older than 5 years"
+            var listMovies =  SearchPhrases(searchBar, queryMovies);
 
-            var listMovies = await queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToListAsync();
+            //add to listMovies list of movies that contains inserted search string in theirs text attributes
 
-
+            listMovies.AddRange(SearchTextualAttributes(searchBar, queryMovies));
             foreach (var movie in listMovies)
             {
                 _imageHelper.SetImageSource(movie);
             }
             return listMovies;
         }
+
+        private List<GetMovieDto> SearchTextualAttributes(string searchBar, IQueryable<Movie> queryMovies)
+        {
+            queryMovies = queryMovies.Where(x =>
+               x.Title.ToLower().Contains(searchBar.ToLower()) ||
+               x.Description.ToLower().Contains(searchBar.ToLower())
+               );
+            queryMovies = queryMovies.Include(x => x.Actors);
+            return  queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToList(); ;
+        }
+
+        private List<GetMovieDto> SearchPhrases(string searchBar, IQueryable<Movie> queryMovies)
+        {
+            if (searchBar != null)
+            {
+                //check if number is inserted in searchBar
+                var regResultNumber = Regex.Match(searchBar, @"\d+").Value;
+                if (!string.IsNullOrEmpty(regResultNumber))
+                {
+                    //check for the word "star"
+                    var regResultStar = searchBar.Contains(_genericSearchWords[0]) ? _genericSearchWords[0] : "";
+                    if (!string.IsNullOrEmpty(regResultStar))
+                    {
+                        //if there is phrase "at least"  do query with >=, if not take movies whose average rating equals to inserted number 
+                        var regResultAtleast = searchBar.Contains(_genericSearchWords[1]);
+                        if (regResultAtleast)
+                            queryMovies = queryMovies.Where(x => x.AverageRating >= Int32.Parse(regResultNumber));
+                        else
+                            queryMovies = queryMovies.Where(x => x.AverageRating == int.Parse(regResultNumber));
+                    }
+
+                    var regResultYear = searchBar.Contains(_genericSearchWords[2]) ? _genericSearchWords[2] : "";
+                    var regResultAfter = searchBar.Contains(_genericSearchWords[3]) ? _genericSearchWords[3] : "";
+                    var regResultOlderThan = searchBar.Contains(_genericSearchWords[4]) ? _genericSearchWords[4] : "";
+
+                    //if "after" i inserted in searchBar 
+                    if (!string.IsNullOrEmpty(regResultAfter))
+                        queryMovies = queryMovies.Where(x => x.ReleaseDate.Year > Int32.Parse(regResultNumber));
+                    if (!string.IsNullOrEmpty(regResultOlderThan))
+                        queryMovies = queryMovies.Where(x => x.ReleaseDate.AddYears(Int32.Parse(regResultNumber)) < DateTime.Now);
+
+                }
+
+            }
+
+            queryMovies = queryMovies.Include(x => x.Actors);
+           // return queryMovies;
+           return queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToList();
+        }
+
         public async Task<string> SetRating(Movie movie, int yourRating)
         {
 
@@ -291,6 +337,30 @@ namespace MovieRatingEngine.Services
             return null;
         }
 
+
+        //private async Task<List<string>> Words(string searchWord)
+        //{
+        //    var words = new List<string>();
+        //    if (string.IsNullOrEmpty(searchWord))
+        //        return words;
+        //    searchWord = searchWord.ToLower();
+
+        //    var regResultNumber = Regex.Match(searchWord, @"\d+").Value;
+        //    var regResultStar = searchWord.Contains(_genericSearchWords[0]) ? _genericSearchWords[0] : "";
+        //    if (!string.IsNullOrEmpty(regResultStar))
+        //    {
+        //        var regResultAtleast = searchWord.Contains(_genericSearchWords[1]) ? _genericSearchWords[1] : "";
+
+        //    }
+
+        //    if (!String.IsNullOrEmpty(regResultNumber))
+        //    {
+        //        int number = Int32.Parse(regResultNumber);
+        //    }
+
+
+        //    return words;
+        //}
     }
 
 }
