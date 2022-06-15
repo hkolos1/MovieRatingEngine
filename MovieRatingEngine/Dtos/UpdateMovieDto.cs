@@ -14,15 +14,11 @@ namespace MovieRatingEngine.Dtos
         public string Description { get; set; }
         public Category Type { get; set; }
         public DateTime ReleaseDate { get; set; }
-
         //add existing actors to movie
-        public List<Guid> ActorIds { get; set; }
+        public List<Guid> ActorIds { get; set; } = new List<Guid>();
         //add new actors to movie
+        public List<AddActorDto> NewActors { get; set; } = new List<AddActorDto>();
 
-        public List<AddActorDto> NewActors { get; set; }
-
-        //public byte[] ImageByteArray { get; set; }
-        // public string ImageName { get; set; }
         [NotMapped]
         public IFormFile ImageFile { get; set; }
     }

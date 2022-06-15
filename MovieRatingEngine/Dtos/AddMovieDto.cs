@@ -15,10 +15,9 @@ namespace MovieRatingEngine.Dtos
         public Category Type { get; set; }
         public DateTime ReleaseDate { get; set; }
         //add existing actors to movie
-        public List<Guid> ActorIds { get; set; }
+        public List<Guid> ActorIds { get; set; } = new List<Guid>();
         //add new actors to movie
-
-        public List<AddActorDto> NewActors { get; set; }
+        public List<AddActorDto> NewActors { get; set; } = new List<AddActorDto>();
 
         [NotMapped]
         public IFormFile ImageFile { get; set; }

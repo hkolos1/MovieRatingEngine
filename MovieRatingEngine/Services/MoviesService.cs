@@ -80,7 +80,7 @@ namespace MovieRatingEngine.Services
         }
 
         private Guid GetUserId() => Guid.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-        public async Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie)//, List<AddActorDto> addNewActors)
+        public async Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie)
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
@@ -114,7 +114,7 @@ namespace MovieRatingEngine.Services
                     foreach (var actorId in newMovie.ActorIds)
                     {
                         var ex = await _actorMovieService.AddActorToMovie(actorId, movieActor);
-                        if (ex == null)
+                        if (ex != null)
                             serviceResponse.Message += ex;
 
                     }
@@ -124,7 +124,7 @@ namespace MovieRatingEngine.Services
                 foreach (var actorDto in newMovie.NewActors)
                 {
                     var ex = await _actorMovieService.AddNewActorToMovie(actorDto, movieActor);
-                    if (ex == null)
+                    if (ex != null)
                         serviceResponse.Message += ex;
                 }
 
@@ -178,7 +178,7 @@ namespace MovieRatingEngine.Services
                     foreach (var actorId in updatedMovie.ActorIds)
                     {
                         var ex = await _actorMovieService.AddActorToMovie(actorId, movieActor);
-                        if (ex == null)
+                        if (ex != null)
                             serviceResponse.Message += ex;
 
                     }
@@ -188,7 +188,7 @@ namespace MovieRatingEngine.Services
                 foreach (var actorDto in updatedMovie.NewActors)
                 {
                     var ex = await _actorMovieService.AddNewActorToMovie(actorDto, movieActor);
-                    if (ex == null)
+                    if (ex != null)
                         serviceResponse.Message += ex;
                 }
 

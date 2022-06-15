@@ -37,7 +37,7 @@ namespace MovieRatingEngine.Services
                 if (_db.Actors.Any(x => x.FirstName == request.FirstName && x.LastName == request.LastName))
                 {
                     response.Success = false;
-                    response.Message = "Actor already exist.";
+                    response.Message = "Actor already exist. ";
                 }
                 else
                 {

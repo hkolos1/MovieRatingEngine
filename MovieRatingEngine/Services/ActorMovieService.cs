@@ -27,9 +27,9 @@ namespace MovieRatingEngine.Services
             {
                 var actor = await _actorService.CheckIfActorExists(actorId);
                 if (actor == null)
-                    throw new Exception("Actor with id " + actorId + " does not exist");
+                    throw new Exception("Actor with id " + actorId + " does not exist. ");
                 if(movie.Actors.Any(x=>x.Id == actor.Id))
-                    throw new Exception("Actor with id " + actorId + " is already on the list.");
+                    throw new Exception("Actor with id " + actorId + " is already on the list. ");
 
                 movie.Actors.Add(actor);
                 await _db.SaveChangesAsync();
@@ -46,7 +46,7 @@ namespace MovieRatingEngine.Services
         {
             try
             {
-                var addActorResponse = await _actorService.AddNewActor(actorDto) ?? throw new Exception("Actor could not be created.");
+                var addActorResponse = await _actorService.AddNewActor(actorDto) ?? throw new Exception("Actor could not be created. ");
 
                 movie.Actors.Add(addActorResponse);
                 await _db.SaveChangesAsync();

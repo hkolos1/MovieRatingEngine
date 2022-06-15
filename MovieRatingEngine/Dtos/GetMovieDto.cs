@@ -15,9 +15,6 @@ namespace MovieRatingEngine.Dtos
         public string Type { get; set; }
         public DateTime ReleaseDate { get; set; }
         public List<Actor.GetActorDto> Actors { get; set; }
-        //public string PhotoUrl { get; set; }
-
-       // public byte[] ImageByteArray { get; set; }
         public string ImageName { get; set; }
 
         [NotMapped]

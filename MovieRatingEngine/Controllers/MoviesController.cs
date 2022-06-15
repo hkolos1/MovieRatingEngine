@@ -70,7 +70,7 @@ namespace MovieRatingEngine.Controllers
 
         [HttpPut]
 
-        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromForm] UpdateMovieDto updateMovie)
+        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromBody] UpdateMovieDto updateMovie)
 
         {
             var response = await _moviesService.UpdateMovie(updateMovie);
@@ -92,7 +92,7 @@ namespace MovieRatingEngine.Controllers
             }
             return Ok(response);
         }
-        [HttpDelete("deleteactor/{movieId}/{actorId}")]
+        [HttpDelete("{movieId}/deleteactor/{actorId}")]
         [Authorize(Roles = nameof(Role.Admin))]
         public async Task<IActionResult> DeleteMovie(Guid movieId, Guid actorId)
         {
@@ -103,7 +103,7 @@ namespace MovieRatingEngine.Controllers
             }
             return Ok();
         }
-        [HttpPost("{movieId}")]
+        [HttpPost("{movieId}/addactor")]
         [Authorize(Roles = nameof(Role.Admin))]
         public async Task<IActionResult> AddActorToMovie(Guid movieId, AddActorsToMovie request)
         {
