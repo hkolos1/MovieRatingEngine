@@ -87,7 +87,7 @@ namespace MovieRatingEngine.Services
                 }
 
                 //change averageRating in Movie // i don't think it's necessary to store this in table, it can be calculated for dto 
-                exceptionString = _moviesService.SetRating(movie, request.YourRating).Result;
+                exceptionString = await _moviesService.SetRating(movie);
                 if (exceptionString != null)
                     throw new Exception(exceptionString);
 
@@ -221,13 +221,17 @@ namespace MovieRatingEngine.Services
             var response = new ServiceResponse<bool>();
             try
             {
-                var rating = CheckIfMovieUserRatingExists(movieId, GetUserId());
+                var rating = await CheckIfMovieUserRatingExists(movieId, GetUserId());
                 if (rating != null)
                 {
                     _db.Remove(rating);
                     await _db.SaveChangesAsync();
+                    var movie = await _db.Movies.Include(x=>x.Ratings).FirstOrDefaultAsync(x => x.Id == movieId);
+                    var exSetRating = await _moviesService.SetRating(movie);
+                    if (exSetRating != null)
+                        throw new Exception(exSetRating);
+                     response.Message = "Deleted";
                 }
-                response.Message = "Deleted";
             }
             catch (Exception ex)
             {

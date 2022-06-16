@@ -24,7 +24,7 @@ namespace MovieRatingEngine.Services
         Task<List<GetMovieDto>> PagingMovie(int? pageNumber, int? pageSize);
         Task<List<GetMovieDto>> SearchMovie(string title, string releaseDate);
       
-        Task<string> SetRating(Movie movie, int yourRating);
+        Task<string> SetRating(Movie movie);
 
     }
 }

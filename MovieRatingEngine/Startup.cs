@@ -62,6 +62,7 @@ namespace MovieRatingEngine
             services.AddScoped<IActorService, ActorService>();
             services.AddScoped<IActorMovieService, ActorMovieService>();
             services.AddScoped<IRatingService, RatingService>();
+            services.AddScoped<ISeedDb, SeedDbService>();
 
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

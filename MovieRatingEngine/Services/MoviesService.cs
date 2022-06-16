@@ -254,14 +254,17 @@ namespace MovieRatingEngine.Services
             }
             return _mapper.Map<List<GetMovieDto>>(movies);
         }
-        public async Task<string> SetRating(Movie movie, int yourRating)
+        public async Task<string> SetRating(Movie movie)
         {
 
             if (movie == null)
                 return "Movie not found.";
             try
             {
-                 movie.AverageRating = Math.Round(await _context.Ratings.Where(x => x.MovieId == movie.Id).AverageAsync(x => x.YourRating), 1);
+                if (movie.Ratings.Any())
+                    movie.AverageRating = Math.Round(movie.Ratings.Average(x => x.YourRating), 1);
+                else
+                    movie.AverageRating = 0;
                  await _context.SaveChangesAsync();
 
             }
