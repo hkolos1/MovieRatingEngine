@@ -60,8 +60,9 @@ namespace MovieRatingEngine.Services
         }
         public async Task<Actor>AddNewActor(AddActorDto request)
         {
-            if (_db.Actors.Any(x => x.FirstName == request.FirstName && x.LastName == request.LastName))
-                return null;
+            var dbActor = await _db.Actors.Where(x => x.FirstName == request.FirstName && x.LastName == request.LastName).FirstOrDefaultAsync();
+            if (dbActor!=null)
+                return dbActor;
             var actor = _mapper.Map<Actor>(request);
             await _db.Actors.AddAsync(actor);
             await _db.SaveChangesAsync();

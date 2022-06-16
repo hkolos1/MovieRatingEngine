@@ -28,7 +28,7 @@ namespace MovieRatingEngine.Services
                 var actor = await _actorService.CheckIfActorExists(actorId);
                 if (actor == null)
                     throw new Exception("Actor with id " + actorId + " does not exist. ");
-                if(movie.Actors.Any(x=>x.Id == actor.Id))
+                if (movie.Actors.Any(x => x.Id == actor.Id))
                     throw new Exception("Actor with id " + actorId + " is already on the list. ");
 
                 movie.Actors.Add(actor);
@@ -46,7 +46,8 @@ namespace MovieRatingEngine.Services
         {
             try
             {
-                var addActorResponse = await _actorService.AddNewActor(actorDto) ?? throw new Exception("Actor could not be created. ");
+                var addActorResponse = await _actorService.AddNewActor(actorDto) ??
+                    throw new Exception("Actor " + actorDto.FirstName + " " + actorDto.LastName + " could not be created. ");
 
                 movie.Actors.Add(addActorResponse);
                 await _db.SaveChangesAsync();
@@ -67,9 +68,10 @@ namespace MovieRatingEngine.Services
             {
                 //var actor = await _db.Actors.FirstOrDefaultAsync(x => x.Id == actorId) ?? throw new Exception("Actor not found.");
                 var movie = await _db.Movies.Include(x => x.Actors).FirstOrDefaultAsync(x => x.Id == movieId) ?? throw new Exception("Movie not found.");
-                var toDelete = movie.Actors.FirstOrDefault(x => x.Id == actorId);
-                if(toDelete != null)
-                 movie.Actors.Remove(toDelete);
+                var toDelete = movie.Actors.FirstOrDefault(x => x.Id == actorId) ??
+                    throw new Exception("Actor isn't on the list of actors in movie " + movie.Title + ". ");
+               
+                movie.Actors.Remove(toDelete);
                 await _db.SaveChangesAsync();
                 response.Data = true;
             }
