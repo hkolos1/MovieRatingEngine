@@ -38,17 +38,17 @@ namespace MovieRatingEngine.Services
             _actorService = actorService;
         }
 
-        public async Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies()
+        public async Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies(PaginationNumbers request)
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
             {
-                var mapped = await _context.Movies.Include(x => x.Actors).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                var mapped = await _context.Movies.Include(x => x.Actors).OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var movie in mapped)
                 {
                     _imageHelper.SetImageSource(movie);
                 }
-                serviceResponse.Data = mapped;
+                serviceResponse.Data = PagedList<GetMovieDto>.Create(mapped,request.PageNumber,request.PageSize);
 
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<GetMovieDto>();
             try
             {
-                var dbCharacter = await _context.Movies.Include(x => x.Actors).FirstOrDefaultAsync(c => c.Id == id);
+                var dbCharacter = await _context.Movies.Include(x => x.Actors).OrderByDescending(x=>x.AverageRating).FirstOrDefaultAsync(c => c.Id == id);
                 if (dbCharacter == null)
                     throw new Exception("Movie not found.");
                 var mapped = _mapper.Map<GetMovieDto>(dbCharacter);
@@ -130,12 +130,13 @@ namespace MovieRatingEngine.Services
                         serviceResponse.Message += ex;
                 }
 
-                var mapped = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                var mapped = await _context.Movies.OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var m in mapped)
                 {
                     _imageHelper.SetImageSource(m);
                 }
-                serviceResponse.Data = mapped;
+                var pageNumbers = new PaginationNumbers();
+                serviceResponse.Data = PagedList<GetMovieDto>.Create(mapped,pageNumbers.PageNumber, pageNumbers.PageSize);
             }
             catch (Exception ex)
             {
@@ -219,7 +220,9 @@ namespace MovieRatingEngine.Services
                 _imageHelper.DeleteImage(movie.ImageName);
                 _context.Movies.Remove(movie);
                 await _context.SaveChangesAsync();
-                serviceResponse.Data = _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToList();
+                var mapped = _context.Movies.OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToList();
+                var pageNumbers = new PaginationNumbers();
+                serviceResponse.Data = PagedList<GetMovieDto>.Create(mapped, pageNumbers.PageNumber, pageNumbers.PageSize);
             }
             catch (Exception ex)
             {
@@ -231,7 +234,7 @@ namespace MovieRatingEngine.Services
 
         public async Task<List<GetMovieDto>> PagingMovie(int? pageNumber, int? pageSize)
         {
-            var movies = await _context.Movies.Include(x => x.Actors).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+            var movies = await _context.Movies.Include(x => x.Actors).OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
             foreach (var movie in movies)
             {
                 _imageHelper.SetImageSource(movie);
@@ -338,29 +341,6 @@ namespace MovieRatingEngine.Services
         }
 
 
-        //private async Task<List<string>> Words(string searchWord)
-        //{
-        //    var words = new List<string>();
-        //    if (string.IsNullOrEmpty(searchWord))
-        //        return words;
-        //    searchWord = searchWord.ToLower();
-
-        //    var regResultNumber = Regex.Match(searchWord, @"\d+").Value;
-        //    var regResultStar = searchWord.Contains(_genericSearchWords[0]) ? _genericSearchWords[0] : "";
-        //    if (!string.IsNullOrEmpty(regResultStar))
-        //    {
-        //        var regResultAtleast = searchWord.Contains(_genericSearchWords[1]) ? _genericSearchWords[1] : "";
-
-        //    }
-
-        //    if (!String.IsNullOrEmpty(regResultNumber))
-        //    {
-        //        int number = Int32.Parse(regResultNumber);
-        //    }
-
-
-        //    return words;
-        //}
     }
 
 }

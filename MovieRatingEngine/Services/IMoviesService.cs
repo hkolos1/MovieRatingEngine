@@ -10,7 +10,7 @@ namespace MovieRatingEngine.Services
 {
     public interface IMoviesService
     {
-        Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies();
+        Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies(PaginationNumbers request);
         Task<ServiceResponse<GetMovieDto>> GetMovieById(Guid id);
 
         Task<ServiceResponse<List<GetMovieDto>>> AddMovie(AddMovieDto newMovie);//, List<AddActorDto> addNewActors);

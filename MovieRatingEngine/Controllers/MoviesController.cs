@@ -43,9 +43,10 @@ namespace MovieRatingEngine.Controllers
 
         [HttpGet("GetAll")]
         [Authorize(Roles = nameof(Role.Admin) + ", " + nameof(Role.User))]
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> Get()
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> Get([FromQuery]PaginationNumbers request)
         {
-            return Ok(await _moviesService.GetAllMovies());
+            
+            return Ok(await _moviesService.GetAllMovies(request));
         }
 
         [HttpGet("{id}")]
