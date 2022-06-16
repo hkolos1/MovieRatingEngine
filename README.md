@@ -1,4 +1,4 @@
-<img height="350" src="https://i.ibb.co/WDrLyCs/Logo-vertical.png">
+<img height="350" src="https://i.ibb.co/VCPHpcg/Logo-vertical.png">
 
 ## Introduction
 
