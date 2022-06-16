@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MovieRatingEngine.Dtos
+namespace MovieRatingEngine.Dtos.Movie
 {
     public class UpdateMovieDto
     {

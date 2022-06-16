@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieRatingEngine.Data;
-using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MovieRatingEngine.Entity;
+using MovieRatingEngine.Dtos.Movie;
+using MovieRatingEngine.Dtos;
 
 namespace MovieRatingEngine.Controllers
 {
@@ -34,10 +35,9 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("[action]")]
-
-        public async  Task<IActionResult> SearchMovie(string Title, string ReleaseDate)
+        public async  Task<IActionResult> SearchMovie(string searchBar, Category type=Category.Movie)
         {
-            return Ok(await _moviesService.SearchMovie(Title, ReleaseDate));
+            return Ok(await _moviesService.SearchMovie(searchBar, type));
         }
         
         [HttpGet("[action]")]
@@ -48,9 +48,10 @@ namespace MovieRatingEngine.Controllers
 
         [HttpGet("GetAll")]
         [Authorize(Roles = nameof(Role.Admin) + ", " + nameof(Role.User))]
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> Get()
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> Get([FromQuery]PaginationNumbers request)
         {
-            return Ok(await _moviesService.GetAllMovies());
+            
+            return Ok(await _moviesService.GetAllMovies(request));
         }
 
         [HttpGet("{id}")]

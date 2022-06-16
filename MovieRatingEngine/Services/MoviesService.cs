@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MovieRatingEngine.Data;
 using MovieRatingEngine.Dtos;
-using MovieRatingEngine.Helpers;
+using MovieRatingEngine.Dtos.Movie;
 using MovieRatingEngine.Entity;
+using MovieRatingEngine.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MovieRatingEngine.Services
@@ -23,7 +25,7 @@ namespace MovieRatingEngine.Services
         private readonly IImageHelper _imageHelper;
         private readonly IActorMovieService _actorMovieService;
         private readonly IActorService _actorService;
-
+        private readonly List<string> _genericSearchWords = new List<string> { "star", "at least", "year", "after", "older than" };
 
         public MoviesService(IMapper mapper, MovieContext context, IHttpContextAccessor httpContextAccessor, IImageHelper imageHelper, IActorMovieService actorMovieService, IActorService actorService)
 
@@ -36,17 +38,17 @@ namespace MovieRatingEngine.Services
             _actorService = actorService;
         }
 
-        public async Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies()
+        public async Task<ServiceResponse<List<GetMovieDto>>> GetAllMovies(PaginationNumbers request)
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
             {
-                var mapped = await _context.Movies.Include(x => x.Actors).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                var mapped = await _context.Movies.Include(x => x.Actors).OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var movie in mapped)
                 {
                     _imageHelper.SetImageSource(movie);
                 }
-                serviceResponse.Data = mapped;
+                serviceResponse.Data = PagedList<GetMovieDto>.Create(mapped,request.PageNumber,request.PageSize);
 
             }
             catch (Exception ex)
@@ -63,7 +65,7 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<GetMovieDto>();
             try
             {
-                var dbCharacter = await _context.Movies.Include(x=>x.Actors).FirstOrDefaultAsync(c => c.Id == id);
+                var dbCharacter = await _context.Movies.Include(x => x.Actors).OrderByDescending(x=>x.AverageRating).FirstOrDefaultAsync(c => c.Id == id);
                 if (dbCharacter == null)
                     throw new Exception("Movie not found.");
                 var mapped = _mapper.Map<GetMovieDto>(dbCharacter);
@@ -128,12 +130,13 @@ namespace MovieRatingEngine.Services
                         serviceResponse.Message += ex;
                 }
 
-                var mapped = await _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+                var mapped = await _context.Movies.OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
                 foreach (var m in mapped)
                 {
                     _imageHelper.SetImageSource(m);
                 }
-                serviceResponse.Data = mapped;
+                var pageNumbers = new PaginationNumbers();
+                serviceResponse.Data = PagedList<GetMovieDto>.Create(mapped,pageNumbers.PageNumber, pageNumbers.PageSize);
             }
             catch (Exception ex)
             {
@@ -217,7 +220,9 @@ namespace MovieRatingEngine.Services
                 _imageHelper.DeleteImage(movie.ImageName);
                 _context.Movies.Remove(movie);
                 await _context.SaveChangesAsync();
-                serviceResponse.Data = _context.Movies.Select(c => _mapper.Map<GetMovieDto>(c)).ToList();
+                var mapped = _context.Movies.OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToList();
+                var pageNumbers = new PaginationNumbers();
+                serviceResponse.Data = PagedList<GetMovieDto>.Create(mapped, pageNumbers.PageNumber, pageNumbers.PageSize);
             }
             catch (Exception ex)
             {
@@ -234,7 +239,7 @@ namespace MovieRatingEngine.Services
 
         public async Task<List<GetMovieDto>> PagingMovie(int? pageNumber, int? pageSize)
         {
-            var movies = await _context.Movies.Include(x => x.Actors).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
+            var movies = await _context.Movies.Include(x => x.Actors).OrderByDescending(x=>x.AverageRating).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
             foreach (var movie in movies)
             {
                 _imageHelper.SetImageSource(movie);
@@ -245,14 +250,31 @@ namespace MovieRatingEngine.Services
             return movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize).ToList();
         }
 
-        public async Task<List<GetMovieDto>> SearchMovie(string title, string releaseDate)
+        public async Task<List<GetMovieDto>> SearchMovie(string searchBar, Category type)
         {
-            var movies = await _context.Movies.Include(x=>x.Actors).Where(q => q.Title.StartsWith(title)).Select(c => _mapper.Map<GetMovieDto>(c)).ToListAsync();
-            foreach (var movie in movies)
+
+            var typeString = type == Category.Movie ? Category.Movie.ToString() : Category.TvShow.ToString();
+
+            if (searchBar == null || searchBar.Length < 2)
+            {
+                var movieList = await _context.Movies.Where(x => x.Type.ToLower().Equals(typeString)).OrderByDescending(x => x.AverageRating).Take(10).ToListAsync();
+                return _mapper.Map<List<GetMovieDto>>(movieList);
+            }
+            var queryMovies = _context.Movies.AsQueryable();
+            queryMovies = queryMovies.Where(x => x.Type.ToLower().Equals(typeString));
+
+
+            // recognizing phrases like "5 stars", "at least 3 stars", "after 2015", "older than 5 years"
+            var listMovies =  SearchPhrases(searchBar, queryMovies);
+
+            //add to listMovies list of movies that contains inserted search string in theirs text attributes
+
+            listMovies.AddRange(SearchTextualAttributes(searchBar, queryMovies));
+            foreach (var movie in listMovies)
             {
                 _imageHelper.SetImageSource(movie);
             }
-            return _mapper.Map<List<GetMovieDto>>(movies);
+            return listMovies;
         }
         public async Task<string> SetRating(Movie movie)
         {

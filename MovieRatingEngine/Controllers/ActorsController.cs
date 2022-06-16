@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MovieRatingEngine.Dtos;
 using MovieRatingEngine.Dtos.Actor;
+using MovieRatingEngine.Dtos.Movie;
 using MovieRatingEngine.Entity;
 using MovieRatingEngine.Services;
 using System;

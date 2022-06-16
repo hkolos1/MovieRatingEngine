@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MovieRatingEngine.Dtos.Movie;
 
 namespace MovieRatingEngine.Profiles
 {
@@ -6,13 +7,13 @@ namespace MovieRatingEngine.Profiles
     {
         public MoviesProfile()
         {
-            CreateMap<Entity.Movie, Dtos.GetMovieDto>();
-            CreateMap<Entity.Movie, Dtos.AddMovieDto>();
-            CreateMap<Entity.Movie, Dtos.UpdateMovieDto>();
+            CreateMap<Entity.Movie, GetMovieDto>();
+            CreateMap<Entity.Movie, AddMovieDto>();
+            CreateMap<Entity.Movie, UpdateMovieDto>();
 
-            CreateMap<Entity.Movie, Dtos.GetMovieDto>().ReverseMap();
-            CreateMap<Entity.Movie, Dtos.AddMovieDto>().ReverseMap();
-            CreateMap<Entity.Movie, Dtos.UpdateMovieDto>().ReverseMap();
+            CreateMap<Entity.Movie, GetMovieDto>().ReverseMap();
+            CreateMap<Entity.Movie, AddMovieDto>().ReverseMap();
+            CreateMap<Entity.Movie, UpdateMovieDto>().ReverseMap();
 
         }
     }

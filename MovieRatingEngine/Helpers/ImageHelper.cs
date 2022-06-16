@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using MovieRatingEngine.Dtos;
+using MovieRatingEngine.Dtos.Movie;
 using MovieRatingEngine.Entity;
 using System;
 using System.IO;
