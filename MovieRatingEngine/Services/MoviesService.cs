@@ -276,6 +276,55 @@ namespace MovieRatingEngine.Services
             }
             return listMovies;
         }
+
+        private List<GetMovieDto> SearchTextualAttributes(string searchBar, IQueryable<Movie> queryMovies)
+        {
+            queryMovies = queryMovies.Where(x =>
+               x.Title.ToLower().Contains(searchBar.ToLower()) ||
+               x.Description.ToLower().Contains(searchBar.ToLower())
+               );
+            queryMovies = queryMovies.Include(x => x.Actors);
+            return queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToList(); ;
+        }
+
+        private List<GetMovieDto> SearchPhrases(string searchBar, IQueryable<Movie> queryMovies)
+        {
+            if (searchBar != null)
+            {
+                //check if number is inserted in searchBar
+                var regResultNumber = Regex.Match(searchBar, @"\d+").Value;
+                if (!string.IsNullOrEmpty(regResultNumber))
+                {
+                    //check for the word "star"
+                    var regResultStar = searchBar.Contains(_genericSearchWords[0]) ? _genericSearchWords[0] : "";
+                    if (!string.IsNullOrEmpty(regResultStar))
+                    {
+                        //if there is phrase "at least"  do query with >=, if not take movies whose average rating equals to inserted number 
+                        var regResultAtleast = searchBar.Contains(_genericSearchWords[1]);
+                        if (regResultAtleast)
+                            queryMovies = queryMovies.Where(x => x.AverageRating >= Int32.Parse(regResultNumber));
+                        else
+                            queryMovies = queryMovies.Where(x => x.AverageRating == int.Parse(regResultNumber));
+                    }
+
+                    var regResultYear = searchBar.Contains(_genericSearchWords[2]) ? _genericSearchWords[2] : "";
+                    var regResultAfter = searchBar.Contains(_genericSearchWords[3]) ? _genericSearchWords[3] : "";
+                    var regResultOlderThan = searchBar.Contains(_genericSearchWords[4]) ? _genericSearchWords[4] : "";
+
+                    //if "after" i inserted in searchBar 
+                    if (!string.IsNullOrEmpty(regResultAfter))
+                        queryMovies = queryMovies.Where(x => x.ReleaseDate.Year > Int32.Parse(regResultNumber));
+                    if (!string.IsNullOrEmpty(regResultOlderThan))
+                        queryMovies = queryMovies.Where(x => x.ReleaseDate.AddYears(Int32.Parse(regResultNumber)) < DateTime.Now);
+
+                }
+
+            }
+
+            queryMovies = queryMovies.Include(x => x.Actors);
+            // return queryMovies;
+            return queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToList();
+        }
         public async Task<string> SetRating(Movie movie)
         {
 
