@@ -142,7 +142,7 @@ namespace MovieRatingEngine.Services
             var response = new ServiceResponse<List<GetRatigDto>>();
             try
             {
-                var userRatings = await _db.Users.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == userId);
+                var userRatings = await _db.Users.Include(x => x.Ratings).ThenInclude(x=>x.Movie).FirstOrDefaultAsync(x => x.Id == userId);
 
                 response.Data = _mapper.Map<List<GetRatigDto>>(userRatings.Ratings.OrderByDescending(x => x.CreatedAt).Select(x => _mapper.Map<GetRatigDto>(x)));
             }
@@ -161,7 +161,7 @@ namespace MovieRatingEngine.Services
             try
             {
 
-                var userRatings = await _db.Users.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == GetUserId());
+                var userRatings = await _db.Users.Include(x => x.Ratings).ThenInclude(x=>x.Movie).FirstOrDefaultAsync(x => x.Id == GetUserId());
 
                 response.Data = _mapper.Map<List<GetRatigDto>>(userRatings.Ratings.OrderByDescending(x => x.CreatedAt).Select(x => _mapper.Map<GetRatigDto>(x)));
             }

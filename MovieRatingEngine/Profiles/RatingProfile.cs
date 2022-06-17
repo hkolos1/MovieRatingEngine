@@ -16,7 +16,6 @@ namespace MovieRatingEngine.Profiles
             CreateMap<Rating, AddRatingDto>();
 
             CreateMap<Rating, AddRatingDto>().ReverseMap();
-            CreateMap<Rating, GetRatigDto>().ReverseMap();
         }
     }
 }
