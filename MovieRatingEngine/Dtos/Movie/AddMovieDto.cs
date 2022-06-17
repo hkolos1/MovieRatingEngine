@@ -4,15 +4,20 @@ using MovieRatingEngine.Entity;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieRatingEngine.Dtos.Movie
 {
     public class AddMovieDto
     {
+        [Required]
         public string Title { get; set; }
+        [Required]
         public string Description { get; set; }
+        [Required]
         public Category Type { get; set; }
+        [Required]
         public DateTime ReleaseDate { get; set; }
         //add existing actors to movie
         public List<Guid> ActorIds { get; set; } = new List<Guid>();

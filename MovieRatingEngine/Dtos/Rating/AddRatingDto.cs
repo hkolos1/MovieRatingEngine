@@ -7,7 +7,6 @@ namespace MovieRatingEngine.Dtos.Rating
     {
         [Required]
         public Guid MovieId { get; set; }
-        //public Guid UserId { get; set; } //take userId from token
         [Required]
         public int YourRating { get; set; }
     }
