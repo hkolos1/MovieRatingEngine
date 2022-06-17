@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using MovieRatingEngine.Dtos.Movie;
-using MovieRatingEngine.Entity;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,11 +11,12 @@ namespace MovieRatingEngine.Helpers
     public class ImageHelper : IImageHelper
     {
         private readonly IWebHostEnvironment _hostEnviroment;
-        private readonly string _path = "https://localhost:44376/Images/";
+        private readonly IConfiguration _configuration;
 
-        public ImageHelper(IWebHostEnvironment hostEnviroment)
+        public ImageHelper(IWebHostEnvironment hostEnviroment,IConfiguration configuration)
         {
             _hostEnviroment = hostEnviroment;
+            _configuration = configuration;
         }
 
         public void DeleteImage(string imageName)
@@ -52,9 +53,9 @@ namespace MovieRatingEngine.Helpers
         public void SetImageSource(GetMovieDto result)
         {
             if (result.ImageName != null)
-                result.ImageSource = _path + result.ImageName;
+                result.ImageSource = _configuration.GetSection("AppSettings:ImagePath").Value + result.ImageName;
             else
-                result.ImageSource = _path + "noimageavailable.png";
+                result.ImageSource = _configuration.GetSection("AppSettings:ImagePath").Value + result.ImageName;
         }
     }
 }
