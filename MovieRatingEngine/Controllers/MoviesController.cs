@@ -20,11 +20,10 @@ namespace MovieRatingEngine.Controllers
     {
         private readonly IMoviesService _moviesService;
         private readonly IActorMovieService _actorMovieService;
-        private MovieContext _movieContext;
-        public MoviesController(IMoviesService movieService, MovieContext movieContext, IActorMovieService actorMovieService)
+       
+        public MoviesController(IMoviesService movieService, IActorMovieService actorMovieService)
         {
             _moviesService = movieService;
-            _movieContext = movieContext;
             _actorMovieService = actorMovieService;
         }
 
@@ -63,15 +62,15 @@ namespace MovieRatingEngine.Controllers
 
         [HttpPost]
 
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromBody] AddMovieDto newMovie)//, [FromBody]List<AddActorDto> addNewActors)
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromForm] AddMovieDto newMovie)
 
         {
-            return Ok(await _moviesService.AddMovie(newMovie));//, addNewActors));
+            return Ok(await _moviesService.AddMovie(newMovie));
         }
 
         [HttpPut]
 
-        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromBody] UpdateMovieDto updateMovie)
+        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromForm] UpdateMovieDto updateMovie)
 
         {
             var response = await _moviesService.UpdateMovie(updateMovie);
