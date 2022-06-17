@@ -1,6 +1,6 @@
-<img height="300" src="https://i.ibb.co/VCPHpcg/Logo-vertical.png">
+<img height="180" src="https://i.ibb.co/VCPHpcg/Logo-vertical.png">
 
-## Introduction
+## Introduction 🏃
 
 Goal is to build a movie rating engine, similar to the one on imdb.com, but much, much 
 simpler and more rudimentary. So we would not waste time, your solution does not have 
@@ -8,7 +8,7 @@ to be nearly as detailed. Each movie should only have a title, a cover image, a
 description, release date, and cast (at least two actors per movie). Also, every movie can 
 be rated by other users by 1-5 stars.
 
-## User Stories
+## User Stories 🔎
 
 - Upon starting the app, user should be presented with the 10 top rated movies
 - There should be a tab, or a toggle switch that would allow the user to see the top rated 10 
@@ -33,7 +33,7 @@ authenticate those users, anonymous rating will suffice
 - Every movie in the list mentioned above should have a graphic control that displays the 
 average rating of the particular movie
 
-## Instructions
+## Instructions 👩‍🏫
 
 - Implement some kind of API authentication so no unauthorized requests would be 
 responded to from the API side.
@@ -43,6 +43,38 @@ completely different)
 - Make sure your API follows REST principles
 - Make sure that you white list all the REST verbs used in your API
 
-## Technologies
+## Technologies 💻
 
 - ASP .NET 5.0 Web API, Microsoft SQL Server, JWT, Postman
+
+## Prerequisites 📝
+
+* Microsoft Visual Studio 2022 IDE
+* Microsoft SQL Server Management Studio 18
+* Git, Postman
+
+## Installation ⚙️
+Just clone the repo, install the packages with `NuGet Packages Manager`:
+```bash
+$ git clone https://github.com/hkolos1/MovieRatingEngine.git
+$ cd MovieRatingEngine          # Change current directory to the newly created one
+```
+Change `ConnectionStrings` in  `appsettings.json`:
+```
+"ConnectionStrings": {
+    "DefaultConnection": "Server=localhost\\SQLEXPRESS; 
+                          Database=movieRatings; 
+                          Trusted_Connection=true; 
+                          MultipleActiveResultSets=true"
+  },
+```
+After that, it needs to be opened `Package Manager Console` and type `update-database`.
+```
+PM> update-database
+```
+
+Now you can open `Developer PowerShell` and type `dotnet run`. Web API will open on `https://localhost:44376/swagger/index.html`.
+```
+PS> dotnet run
+```
+© 2022 Mistral Technologies
