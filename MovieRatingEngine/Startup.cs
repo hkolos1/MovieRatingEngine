@@ -96,7 +96,7 @@ namespace MovieRatingEngine
                 RequestPath = "/Images"
             });
 
-            app.UseMiddleware<ErrorMiddleware>();
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 

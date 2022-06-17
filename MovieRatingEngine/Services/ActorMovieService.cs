@@ -34,7 +34,6 @@ namespace MovieRatingEngine.Services
 
                 movie.Actors.Add(actor);
                 await _db.SaveChangesAsync();
-
             }
             catch (Exception ex)
             {
@@ -52,8 +51,6 @@ namespace MovieRatingEngine.Services
 
                 movie.Actors.Add(addActorResponse);
                 await _db.SaveChangesAsync();
-
-
             }
             catch (Exception ex)
             {
@@ -67,11 +64,10 @@ namespace MovieRatingEngine.Services
             var response = new ServiceResponse<bool>();
             try
             {
-                //var actor = await _db.Actors.FirstOrDefaultAsync(x => x.Id == actorId) ?? throw new Exception("Actor not found.");
                 var movie = await _db.Movies.Include(x => x.Actors).FirstOrDefaultAsync(x => x.Id == movieId) ?? throw new Exception("Movie not found.");
                 var toDelete = movie.Actors.FirstOrDefault(x => x.Id == actorId) ??
                     throw new Exception("Actor isn't on the list of actors in movie " + movie.Title + ". ");
-               
+
                 movie.Actors.Remove(toDelete);
                 await _db.SaveChangesAsync();
                 response.Data = true;
@@ -88,7 +84,7 @@ namespace MovieRatingEngine.Services
             var response = new ServiceResponse<GetMovieDto>();
             try
             {
-                var movieActor = await _db.Movies.Include(x => x.Actors).FirstOrDefaultAsync(x => x.Id == movieId);
+                var movieActor = await _db.Movies.Include(x => x.Actors).FirstOrDefaultAsync(x => x.Id == movieId) ?? throw new Exception("Movie not found. ");
                 //handling actors 
                 //list of actor Ids 
                 if (request.ActorIds.Count > 0)
@@ -98,16 +94,17 @@ namespace MovieRatingEngine.Services
                         var ex = await AddActorToMovie(actorId, movieActor);
                         if (ex == null)
                             response.Message += ex;
-
                     }
                 }
                 //list of new actors that needs to be added to database
-
-                foreach (var actorDto in request.NewActors)
+                if (request.NewActors != null)
                 {
-                    var ex = await AddNewActorToMovie(actorDto, movieActor);
-                    if (ex == null)
-                        response.Message += ex;
+                    foreach (var actorDto in request.NewActors)
+                    {
+                        var ex = await AddNewActorToMovie(actorDto, movieActor);
+                        if (ex == null)
+                            response.Message += ex;
+                    }
                 }
             }
             catch (Exception ex)
@@ -115,7 +112,6 @@ namespace MovieRatingEngine.Services
                 response.Success = false;
                 response.Message = ex.Message;
             }
-
 
             return response;
         }

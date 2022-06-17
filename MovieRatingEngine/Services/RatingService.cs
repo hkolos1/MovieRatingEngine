@@ -66,7 +66,7 @@ namespace MovieRatingEngine.Services
             try
             {
                 //check if requsted movie exists
-                var movie = await _db.Movies.FirstOrDefaultAsync(x => x.Id == request.MovieId) ?? throw new Exception("Movie not found.");
+                var movie = await _db.Movies.Include(x=>x.Ratings).FirstOrDefaultAsync(x => x.Id == request.MovieId) ?? throw new Exception("Movie not found.");
 
                 string exceptionString = null;
                 //check if it's request for create or update
@@ -123,9 +123,6 @@ namespace MovieRatingEngine.Services
             var response = new ServiceResponse<List<GetRatigDto>>();
             try
             {
-                //var movie = await _db.Movies.Include(x => x.Ratings).FirstOrDefaultAsync(x => x.Id == movieId) ?? throw new Exception("Movie not found.");
-
-                //response.Data = _mapper.Map<List<GetRatigDto>>(movie.Ratings.OrderByDescending(x => x.CreatedAt).Select(x => _mapper.Map<GetRatigDto>(x)));
                 var ratings = await _db.Ratings.Where(x=>x.MovieId==movieId).Include(x=>x.User).Include(x=>x.Movie)
                     .OrderByDescending(x=>x.CreatedAt).ToListAsync()?? throw new Exception("Movie not found.");
 
@@ -136,7 +133,6 @@ namespace MovieRatingEngine.Services
                 response.Success = false;
                 response.Message = ex.Message;
             }
-
 
             return response;
         }

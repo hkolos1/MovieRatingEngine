@@ -55,13 +55,13 @@ namespace MovieRatingEngine.Services
                 response.Message = ex.Message;
             }
 
-
             return response;
         }
-        public async Task<Actor>AddNewActor(AddActorDto request)
+        //add new actor while adding movie
+        public async Task<Actor> AddNewActor(AddActorDto request)
         {
             var dbActor = await _db.Actors.Where(x => x.FirstName == request.FirstName && x.LastName == request.LastName).FirstOrDefaultAsync();
-            if (dbActor!=null)
+            if (dbActor != null)
                 return dbActor;
             var actor = _mapper.Map<Actor>(request);
             await _db.Actors.AddAsync(actor);
@@ -83,7 +83,6 @@ namespace MovieRatingEngine.Services
                 await _db.SaveChangesAsync();
 
                 response.Data = await _db.Actors.Select(x => _mapper.Map<GetActorDto>(actor)).ToListAsync();
-
             }
             catch (Exception ex)
             {
@@ -129,7 +128,6 @@ namespace MovieRatingEngine.Services
             }
 
             return response;
-
         }
 
         public async Task<ServiceResponse<GetActorDto>> UpdateActor(Guid id, AddActorDto request)
@@ -144,11 +142,10 @@ namespace MovieRatingEngine.Services
                     actor.FirstName = request.FirstName;
                 if (request.LastName != null)
                     actor.LastName = request.LastName;
-                //_db.Actors.Update(actor);
+
                 await _db.SaveChangesAsync();
 
                 response.Data = _mapper.Map<GetActorDto>(actor);
-
             }
             catch (Exception ex)
             {
@@ -164,16 +161,14 @@ namespace MovieRatingEngine.Services
             var response = new ServiceResponse<GetActorDto>();
             try
             {
-                var actor = await _db.Actors.FirstOrDefaultAsync(x => x.Id == id);
-                if (actor == null)
-                    throw new Exception("Actor not found.");
+                var actor = await _db.Actors.FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("Actor not found.");
                 var actorToPatch = _mapper.Map<AddActorDto>(actor);
                 patchDocument.ApplyTo(actorToPatch);
 
                 _mapper.Map(actorToPatch, actor);
                 await _db.SaveChangesAsync();
-                response.Data = _mapper.Map<GetActorDto>(actor);
 
+                response.Data = _mapper.Map<GetActorDto>(actor);
             }
             catch (Exception ex)
             {

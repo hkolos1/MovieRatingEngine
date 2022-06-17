@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 
 namespace MovieRatingEngine.Middleware
 {
-    public class ErrorMiddleware
+    public class ExceptionMiddleware
     {
         private readonly IHostEnvironment _env;
         private readonly RequestDelegate _next;
 
-        //public ErrorHandling(RequestDelegate next) => _next = next;
-
-        public ErrorMiddleware(IHostEnvironment env, RequestDelegate next)
+        public ExceptionMiddleware(IHostEnvironment env, RequestDelegate next)
         {
             _env = env;
             _next = next;
@@ -23,11 +21,9 @@ namespace MovieRatingEngine.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-
             try
             {
                 await _next(context);
-                
             }
             catch (Exception ex)
             {
@@ -36,8 +32,6 @@ namespace MovieRatingEngine.Middleware
                     await HandleExceptionForDevelopment(context, ex);
                 else
                     await HandleExceptionForProduction(context, ex);
-
-
             }
         }
 

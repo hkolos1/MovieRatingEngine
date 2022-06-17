@@ -16,6 +16,9 @@ namespace MovieRatingEngine.Services
 
         public async Task<string> Generate()
         {
+            if (! await _db.Database.CanConnectAsync())
+               return "Database is not created. Enter update-database command in Package Manager Console.";
+            
             var login = await SeedDataToMovieContext.Generate(_db, _authService);
             return "Database is created and filled with test data. " + login;
         }

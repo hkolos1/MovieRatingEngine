@@ -12,8 +12,6 @@ namespace MovieRatingEngine.Helpers
         public int TotalCount { get; set; }
 
 
-
-        //List<T> will be the collection od IQueryable 
         public PagedList(List<T> items, int totalCount, int currentPage, int pageSize)
         {
             TotalCount = totalCount;

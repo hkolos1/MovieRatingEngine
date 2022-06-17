@@ -49,8 +49,6 @@ namespace MovieRatingEngine.Services
             }
 
             return response;
-
-
         }
 
         public async Task<ServiceResponse<Guid>> Register(UserAddDto req)//, User user, string password)
@@ -79,10 +77,8 @@ namespace MovieRatingEngine.Services
             else
                 user.Role=Role.User.ToString();
 
-
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
-
 
             response.Data = user.Id;
             return response;
@@ -116,7 +112,6 @@ namespace MovieRatingEngine.Services
                 {
                     if (computedHash[i] != passwordHash[i])
                         return false;
-
                 }
 
                 return true;

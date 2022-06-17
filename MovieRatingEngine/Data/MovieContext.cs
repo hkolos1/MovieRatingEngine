@@ -9,7 +9,6 @@ namespace MovieRatingEngine.Data
         public MovieContext(DbContextOptions options) : base(options)
         {
         }
-
       
         public DbSet<User> Users { get; set; }
         public DbSet<Movie> Movies { get; set; }

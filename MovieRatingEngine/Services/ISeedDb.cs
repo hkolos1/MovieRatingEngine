@@ -5,6 +5,5 @@ namespace MovieRatingEngine.Services
     public interface ISeedDb
     {
         Task<string> Generate();
-        //Task<string> DeleteAndGenerate();
     }
 }

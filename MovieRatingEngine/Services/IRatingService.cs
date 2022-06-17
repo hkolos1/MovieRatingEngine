@@ -15,10 +15,5 @@ namespace MovieRatingEngine.Services
         Task<ServiceResponse<List<GetRatigDto>>> GetRatingsByMovieId(Guid movieId);
         Task<ServiceResponse<GetRatigDto>> StoreRating(AddRatingDto request);
         Task<ServiceResponse<bool>> DeleteRating(Guid movieId);
-        //Task<ServiceResponse<GetRatigDto>> UpdateRating(AddRatingDto request);
-
-
-
-        //Task AddRating(AddRatingDto request);
     }
 }
