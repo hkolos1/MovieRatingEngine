@@ -82,7 +82,7 @@ namespace MovieRatingEngine.Services
                 _db.Actors.Remove(actor);
                 await _db.SaveChangesAsync();
 
-                response.Data = await _db.Actors.Select(x => _mapper.Map<GetActorDto>(actor)).ToListAsync();
+                response.Data = await _db.Actors.Select(x => _mapper.Map<GetActorDto>(x)).ToListAsync();
             }
             catch (Exception ex)
             {

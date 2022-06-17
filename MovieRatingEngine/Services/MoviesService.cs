@@ -209,8 +209,10 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
             {
-                Movie movie = await _context.Movies.FirstOrDefaultAsync(c => c.Id == id) ??
+                Movie movie = await _context.Movies.Include(x=>x.Ratings).FirstOrDefaultAsync(c => c.Id == id) ??
                     throw new Exception("Movie not found.");
+
+                _context.Ratings.RemoveRange(movie.Ratings);
 
                 _imageHelper.DeleteImage(movie.ImageName);
                 _context.Movies.Remove(movie);
