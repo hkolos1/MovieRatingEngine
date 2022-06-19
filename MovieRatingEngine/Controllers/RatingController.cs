@@ -31,7 +31,7 @@ namespace MovieRatingEngine.Controllers
         {
             var response = await _ratingService.StoreRating(request);
             if (response.Success == false)
-                return BadRequest();
+                return BadRequest(response);
             return StatusCode(StatusCodes.Status201Created,response );
         }
         
