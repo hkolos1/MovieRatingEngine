@@ -34,9 +34,10 @@ namespace MovieRatingEngine.Controllers
         }
 
         [HttpGet("[action]")]
-        public async  Task<IActionResult> SearchMovie(string searchBar, Category type=Category.Movie)
+        public async  Task<IActionResult> SearchMovie([FromQuery] PaginationNumbers paginationNumbers, string searchBar, Category type=Category.Movie)
         {
-            return Ok(await _moviesService.SearchMovie(searchBar, type));
+            
+            return Ok(await _moviesService.SearchMovie(paginationNumbers, searchBar, type));
         }
         
         [HttpGet("[action]")]

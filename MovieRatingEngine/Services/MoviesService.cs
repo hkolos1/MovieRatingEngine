@@ -248,7 +248,7 @@ namespace MovieRatingEngine.Services
             return movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize).ToList();
         }
 
-        public async Task<ServiceResponse<List<GetMovieDto>>> SearchMovie(string searchBar, Category type)
+        public async Task<ServiceResponse<List<GetMovieDto>>> SearchMovie(PaginationNumbers paginationNumbers,string searchBar, Category type)
         {
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
@@ -275,7 +275,9 @@ namespace MovieRatingEngine.Services
                 {
                     _imageHelper.SetImageSource(movie);
                 }
-                var pageNumbers = new PaginationNumbers();
+                var pageNumbers = paginationNumbers;
+                if (pageNumbers == null)
+                    pageNumbers = new PaginationNumbers();
                 serviceResponse.Data = PagedList<GetMovieDto>.Create(listMovies,pageNumbers.PageNumber,pageNumbers.PageSize);
             }
             catch (Exception ex)
