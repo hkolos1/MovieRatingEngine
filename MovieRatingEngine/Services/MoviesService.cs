@@ -209,7 +209,7 @@ namespace MovieRatingEngine.Services
             var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
             try
             {
-                Movie movie = await _context.Movies.Include(x=>x.Ratings).FirstOrDefaultAsync(c => c.Id == id) ??
+                Movie movie = await _context.Movies.Include(x => x.Ratings).FirstOrDefaultAsync(c => c.Id == id) ??
                     throw new Exception("Movie not found.");
 
                 _context.Ratings.RemoveRange(movie.Ratings);
@@ -248,29 +248,43 @@ namespace MovieRatingEngine.Services
             return movies.Skip((currentPageNumber - 1) * currentPageSize).Take(currentPageSize).ToList();
         }
 
-        public async Task<List<GetMovieDto>> SearchMovie(string searchBar, Category type)
+        public async Task<ServiceResponse<List<GetMovieDto>>> SearchMovie(string searchBar, Category type)
         {
-            var typeString = type == Category.Movie ? Category.Movie.ToString() : Category.TvShow.ToString();
-
-            if (searchBar == null || searchBar.Length < 2)
+            var serviceResponse = new ServiceResponse<List<GetMovieDto>>();
+            try
             {
-                var movieList = await _context.Movies.Where(x => x.Type.ToLower().Equals(typeString)).OrderByDescending(x => x.AverageRating).Take(10).ToListAsync();
-                return _mapper.Map<List<GetMovieDto>>(movieList);
+
+                var typeString = type == Category.Movie ? Category.Movie.ToString() : Category.TvShow.ToString();
+
+                if (searchBar == null || searchBar.Length < 2)
+                {
+                    var movieList = await _context.Movies.Where(x => x.Type.ToLower().Equals(typeString)).OrderByDescending(x => x.AverageRating).Take(10).ToListAsync();
+                    serviceResponse.Data = _mapper.Map<List<GetMovieDto>>(movieList);
+                    return serviceResponse;
+                }
+                var queryMovies = _context.Movies.AsQueryable();
+                queryMovies = queryMovies.Where(x => x.Type.ToLower().Equals(typeString));
+
+                // recognizing phrases like "5 stars", "at least 3 stars", "after 2015", "older than 5 years"
+                var listMovies = SearchPhrases(searchBar, queryMovies);
+
+                //add to listMovies list of movies that contains inserted search string in theirs text attributes
+                listMovies.AddRange(SearchTextualAttributes(searchBar, queryMovies));
+
+                foreach (var movie in listMovies)
+                {
+                    _imageHelper.SetImageSource(movie);
+                }
+                var pageNumbers = new PaginationNumbers();
+                serviceResponse.Data = PagedList<GetMovieDto>.Create(listMovies,pageNumbers.PageNumber,pageNumbers.PageSize);
             }
-            var queryMovies = _context.Movies.AsQueryable();
-            queryMovies = queryMovies.Where(x => x.Type.ToLower().Equals(typeString));
-
-            // recognizing phrases like "5 stars", "at least 3 stars", "after 2015", "older than 5 years"
-            var listMovies = SearchPhrases(searchBar, queryMovies);
-
-            //add to listMovies list of movies that contains inserted search string in theirs text attributes
-            listMovies.AddRange(SearchTextualAttributes(searchBar, queryMovies));
-
-            foreach (var movie in listMovies)
+            catch (Exception ex)
             {
-                _imageHelper.SetImageSource(movie);
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
             }
-            return listMovies;
+
+            return serviceResponse;
         }
 
         private List<GetMovieDto> SearchTextualAttributes(string searchBar, IQueryable<Movie> queryMovies)
@@ -279,7 +293,7 @@ namespace MovieRatingEngine.Services
                x.Title.ToLower().Contains(searchBar.ToLower()) ||
                x.Description.ToLower().Contains(searchBar.ToLower())
                );
-            queryMovies = queryMovies.Include(x => x.Actors);
+            queryMovies = queryMovies.Include(x => x.Actors).OrderByDescending(x=>x.AverageRating);
             return queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToList(); ;
         }
 
@@ -315,7 +329,7 @@ namespace MovieRatingEngine.Services
                 }
             }
 
-            queryMovies = queryMovies.Include(x => x.Actors);
+            queryMovies = queryMovies.Include(x => x.Actors).OrderByDescending(x => x.AverageRating);
 
             return queryMovies.Select(x => _mapper.Map<GetMovieDto>(x)).ToList();
         }
