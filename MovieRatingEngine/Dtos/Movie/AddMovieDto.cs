@@ -15,7 +15,7 @@ namespace MovieRatingEngine.Dtos.Movie
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
-        [Required]
+        
         public Category Type { get; set; }
         [Required]
         public DateTime ReleaseDate { get; set; }

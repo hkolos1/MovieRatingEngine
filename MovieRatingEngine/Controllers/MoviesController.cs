@@ -27,11 +27,11 @@ namespace MovieRatingEngine.Controllers
             _actorMovieService = actorMovieService;
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> PagingMovie(int? pageNumber, int? pageSize)
-        {
-            return Ok(await  _moviesService.PagingMovie(pageNumber, pageSize));
-        }
+        //[HttpGet("[action]")]
+        //public async Task<IActionResult> PagingMovie(int? pageNumber, int? pageSize)
+        //{
+        //    return Ok(await  _moviesService.PagingMovie(pageNumber, pageSize));
+        //}
 
         [HttpGet("[action]")]
         public async  Task<IActionResult> SearchMovie([FromQuery] PaginationNumbers paginationNumbers, string searchBar, Category type=Category.Movie)
@@ -63,7 +63,7 @@ namespace MovieRatingEngine.Controllers
 
         [HttpPost]
 
-        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromForm] AddMovieDto newMovie)
+        public async Task<ActionResult<ServiceResponse<List<GetMovieDto>>>> AddMovie([FromBody] AddMovieDto newMovie)
 
         {
             return Ok(await _moviesService.AddMovie(newMovie));
@@ -71,7 +71,7 @@ namespace MovieRatingEngine.Controllers
 
         [HttpPut]
 
-        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromForm] UpdateMovieDto updateMovie)
+        public async Task<ActionResult<ServiceResponse<List<UpdateMovieDto>>>> UpdateMovie([FromBody] UpdateMovieDto updateMovie)
 
         {
             var response = await _moviesService.UpdateMovie(updateMovie);
